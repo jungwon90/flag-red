@@ -4,8 +4,20 @@ db = SQLAlchemy()
 
 
 class User(db.Model):
-
+    """ A user """
     __tablename__ = "users"
+
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(20))
+    phone_num = db.Column(db.String(20), unique=True, nullable=False)
+    zipcode = db.Column(db.String(10), nullable=False)
+
+    def __repr__(self):
+        """ Shows a user object """
+        return f'<User user_id={self.user_id} zipcode={self.zipcode}>'
+
+
+
 
 
 
