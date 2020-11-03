@@ -1,6 +1,6 @@
 ## Project Proposal
 
-### Why do we need this app?
+### Why do we need Flag Red?
 
 Since 1970, wildfires frequency in U.S. has increased by 400%. 
 There has not been a month without wildfires since 2012. 
