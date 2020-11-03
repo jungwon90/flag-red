@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+    {% block title %}Flag Red{% endblock %}
+
+    {% block head %}
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+        <script src="/static/js/maps.js"></script>
+        <script 
+        async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcPj2Lex4W5AXEhwsPQ02lAG8Axsn2hQg&callback=initMap">
+        </script>
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+    {% endblock %}
+
+    {% block body %}
+        <h3>This is a google map</h3>
+        <div id="fire-map"></div>
+    {% endblock %}
+
+{% endblock %}
