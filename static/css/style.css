@@ -1,3 +1,28 @@
+/* -------------------------------------------- */
+/* BASIC SETUP */
+/* -------------------------------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    background-color: #fff;
+    color: #525252;
+    font-family: 'Lato', 'Arial', sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+
 /* Always set the map height explicitly to define the size of the div
         * element that contains the map. */
 #fire-map {
@@ -7,12 +32,13 @@
 #airquality-map {
     height: 70;
 }
-      
-/* Optional: Makes the sample page fill the window. */
-html,
-body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+    
+.navbar-list {
+    display: inline-block;
+    text-decoration: none;
 }
-      
+
+.navbar-ul-list {
+    float: right;
+    list-style: none;
+}

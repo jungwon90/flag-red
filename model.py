@@ -7,15 +7,47 @@ class User(db.Model):
     """ A user """
     __tablename__ = "users"
 
-    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(20))
+    user_id = db.Column(db.String(10), primary_key=True)
+    fname = db.Column(db.String(20) nullable=False)
+    lname = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+    email = db.Column(db.String(30), nullable=False)
     phone_num = db.Column(db.String(20), unique=True, nullable=False)
     zipcode = db.Column(db.String(10), nullable=False)
+
+    twilios = db.relationship('Twilio')
 
     def __repr__(self):
         """ Shows a user object """
         return f'<User user_id={self.user_id} zipcode={self.zipcode}>'
 
+
+class Twilio(db.Model):
+    """ A twillio's SMS info """
+
+    ___tablename__ = "twilios"
+
+    twilio_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.String(10), db.ForeignKey("users.user_id"))
+    message = db.Column(db.Text)
+
+    user = db.relationship('User')
+
+    def __repr__(self):
+        return f'<Twilio twilio_id={self.twilio_id} user_id={self.user_id}>'
+
+
+class UserAirQualHistory(db.Model):
+    """ Air Quality History based on each user's location """
+
+    __tablename__ = "userairqualhistories"
+
+    user_air_history_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.String(10), db.ForeignKey("users.user_id"))
+    air_history_id = db.Column(db.Integer, db.ForeignKey("airqualhistories.air_history_id"))
+
+    user = db.relationship('User')
+    airqual_histories = db.relationship('AirQualHistory' backref="user_airqual_history")
 
 class AirQualHistory(db.Model):
     """ A history of Air quality """
@@ -42,6 +74,7 @@ class AirQualHistory(db.Model):
     created_at = db.Column(db.DateTime nullable = False) # ISO timestamp of event in UTC
     postal_code = db.Column(db.String(10) nullable = False) 
     major_pollutant = db.Column(db.String)
+
 
     def __repr__(self):
         """ Shows an AirQualHistory object """
