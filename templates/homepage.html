@@ -2,35 +2,46 @@
     {% block title %}Flag Red{% endblock %}
 
     {% block head %}
+        <script src="/static/js/test.js"></script>
         <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
         <script src="/static/js/maps.js"></script>
-        <script src="/static/js/airqualitymap.js"
-        <script 
-        async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcPj2Lex4W5AXEhwsPQ02lAG8Axsn2hQg&callback=fireMap">
-        </script>
-        <script 
-        async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcPj2Lex4W5AXEhwsPQ02lAG8Axsn2hQg&callback=airqualityMap">
-        </script>
+        <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcPj2Lex4W5AXEhwsPQ02lAG8Axsn2hQg&callback=initMap"
+        defer
+        ></script>
+
         <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
     {% endblock %}
 
     {% block body %}
         <label>Fleg Red</label>
-        <form>
-            <input type="text" id="search-input">
-            <input type="submit" value="search">
-        </form>
+        <div class="container">
+            <div class = "row align-items-center">
+                <div class="col-10 mx-auto">
+                    <form action="/search" method="GET" id="search-form">
+                        <select id="search-by" name="search-by">
+                            <option value="by-city">By City</option>
+                            <option value="by-postal-code">By Zipcide</option>
+                        </select>
+                        <input type="text" name="search-input">
+                        <input type="submit" value="search">
+                    </form>
+                </div>
+            </div>
+        </div>
 
+       
         <!-- Fire Map -->
-        <h3>Fire state</h3>
+       
+        <h3>Active Fires</h3>
         <div id="fire-map"></div>
-
+     
         <!-- Air Quality Map -->
         <h3>Air Quality and Pollution</h3>
         <div id="airquality-map"></div>
+      
+
+        
 
     {% endblock %}
 
-{% endblock %}

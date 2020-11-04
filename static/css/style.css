@@ -1,7 +1,11 @@
 /* Always set the map height explicitly to define the size of the div
         * element that contains the map. */
-#fire-map, #airquality-map {
+#fire-map {
     height: 70%;
+    width: 70%;
+}
+#airquality-map {
+    height: 70;
 }
       
 /* Optional: Makes the sample page fill the window. */
