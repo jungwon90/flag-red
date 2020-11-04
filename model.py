@@ -17,8 +17,35 @@ class User(db.Model):
         return f'<User user_id={self.user_id} zipcode={self.zipcode}>'
 
 
+class AirQualHistory(db.Model):
+    """ A history of Air quality """
+    # Air Quality Index 
+    # 0 ~ 50 : good
+    # 51 ~ 100 : moderate
+    # 101 ~ 150 : unhealthy for sensitive groups
+    # 151 ~ 200 : unhealthy
+    # 201 ~ 300 : very unhealthy
+    # 301 ~ higher : hazardous
 
+    __tablename__ = "airqualhistories"
 
+    air_history_id = db.Column(db.Integer, primary_key=True, autoincrement=Ture)
+    no2 = db.Column(db.float) # Nitrogen dioxide conc(ppb)
+    pm10 = db.Column(db.float) # Particulate matter < 10um (ug/m3)
+    pm2_5 = db.Column(db.float) # Particulate matter < 2.5um (ug/m3)
+    co = db.Column(db.float) # Carbon monoxide conc (ppm)
+    so2 = db.Column(db.float) # Sulphur dioxide conc (ppb)
+    ozone = db.Column(db.float) # OZONE conc (ppb)
+    aqi = db.Column(db.Integer, nullable=False) #air quality index
+    lat = db.Column(db.String(10), nullable=False) #latitude
+    lng = db.Column(db.String(10), nullable=False) #longitude
+    created_at = db.Column(db.DateTime nullable = False) # ISO timestamp of event in UTC
+    postal_code = db.Column(db.String(10) nullable = False) 
+    major_pollutant = db.Column(db.String)
+
+    def __repr__(self):
+        """ Shows an AirQualHistory object """
+        return f'<AirQualHistory air_history_id={self.air_history_id} aqi={self.aqi}>'
 
 
 def connect_to_db(flask_app, db_uri='postgresql:///red-flag', echo=True):
