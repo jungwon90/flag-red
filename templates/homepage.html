@@ -15,25 +15,23 @@
 
     {% block body %}
         <label>Fleg Red</label>
-        <div class="container">
-            <div class = "row align-items-center">
-                <div class="col-10 mx-auto">
-                    <form action="/search" method="GET" id="search-form">
-                        <select id="search-by" name="search-by">
-                            <option value="by-city">By City</option>
-                            <option value="by-postal-code">By Zipcide</option>
-                        </select>
-                        <input type="text" name="search-input">
-                        <input type="submit" value="search">
-                    </form>
-                </div>
-            </div>
+        <div>
+            <button class="search-type-button" id="active-fire-button">Active Fire</button>
+            <button class="search-type-button" id="past-fire-button">Past Fires</button> 
         </div>
+
+        <div class="container" id="active-fire-search"></div>
+        <div class="container-fluid" id="past-fire-search"></div>
 
        
         <!-- Fire Map -->
        
         <h3>Active Fires</h3>
+        {% for msg in get_flashed_messages() %}
+        <p class="flash-msg">
+            {{ msg }}
+        </p>
+        {% endfor %}
         <div id="fire-map"></div>
      
         <!-- Air Quality Map -->

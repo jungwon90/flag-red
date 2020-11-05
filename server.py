@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, redirect
+from flask import Flask, render_template, jsonify, request, redirect, flash
 
 import os
 import secrets
@@ -16,9 +16,8 @@ app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 #os.environ
 API_KEY = os.environ['FIRE_KEY']
 
-# set the latitude, longitude with 0
-latitude = 0
-longitude = 0
+# coordinates for markers on MAP
+coordinates = {}
 
 @app.route('/')
 def homepage():
@@ -27,7 +26,7 @@ def homepage():
 
 
 @app.route('/search', methods=['GET'])
-def find_cur_airquality():
+def find_cur_airqual_and_fire():
     """ Search for active fires """
 
     #Use form data from the user to populate any search parameters
@@ -36,7 +35,7 @@ def find_cur_airquality():
 
     print(search_by, search_input)
 
-    url = f'https://api.ambeedata.com/latest/{search_by}/'
+    air_url = f'https://api.ambeedata.com/latest/{search_by}/'
     
     if search_by == 'by-postal-code':
         querystring = {'postalCode': search_input, 'countryCode': "US"}
@@ -48,22 +47,34 @@ def find_cur_airquality():
         'Content-type': "application/json"
     }
     # Make a request to the fire/Air Search endpoint to search for events
-    res = requests.get(url, headers=headers, params=querystring)
+    air_res = requests.get(air_url, headers=headers, params=querystring)
 
-    # save the JSON data from the response to the `data`
-    # variable so that it can display on the page. This is useful for
-    # debugging purposes!
-    airquality_data = res.json() # convert json to python dictionary
-    #print(airquality_data['stations']) #a list of dictionaries
+    # convert json to python dictionary
+    airquality_data = air_res.json() 
     
     # get the very first(recent) data/result
-    first_dictionary = airquality_data['stations'][0] 
-    #print(first_dictionary['lat'], first_dictionary['lng'])
+    airqual_dictionary = airquality_data['stations'][0]
+    
+    print(airqual_dictionary['lat'], airqual_dictionary['lng'])
 
-    latitude = first_dictionary['lat']
-    longitude = first_dictionary['lng']
+    # get the coordinate of the city/zipcode for requesting fire data
+    latitude = airqual_dictionary['lat']
+    longitude = airqual_dictionary['lng']
 
-    #url_for_fire = 
+    fire_url = "https://api.ambeedata.com/latest/fire"
+
+    fire_querystring = {"lat": str(latitude), "lng": str(longitude)}
+    #fire_querystring = {"lat": "36.778259", "lng": "-119.417931"}
+
+    fire_res = requests.get(fire_url, headers=headers, params=fire_querystring)
+  
+    fire_data = fire_res.json()
+    print(fire_data)
+
+    if len(fire_data['data']) == 0:
+        flash(f'No active fire around {search_input}')
+
+
         
     return redirect('/')
 
