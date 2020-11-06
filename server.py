@@ -16,8 +16,8 @@ app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 #os.environ
 API_KEY = os.environ['FIRE_KEY']
 
-# coordinates for markers on MAP
-coordinates = {}
+# fire data for markers on MAP, a list of dictionaries
+fires= []
 
 @app.route('/')
 def homepage():
@@ -25,13 +25,13 @@ def homepage():
     return render_template('homepage.html')
 
 
-@app.route('/search', methods=['GET'])
+@app.route('/search.json', methods=['GET'])
 def find_cur_airqual_and_fire():
     """ Search for active fires """
 
     #Use form data from the user to populate any search parameters
-    search_by = request.args.get('search-by')
-    search_input = request.args.get('search-input')
+    search_by = request.form.get('search-by')
+    search_input = request.form.get('search-input')
 
     print(search_by, search_input)
 
@@ -73,10 +73,19 @@ def find_cur_airqual_and_fire():
 
     if len(fire_data['data']) == 0:
         flash(f'No active fire around {search_input}')
+    else:
+        #put the coordinates into the coordinates list
+        for each_fire in fire_data['data']: 
+            fires.append({"lat": each_fire['lat'], "lon": each_fire['lon'],
+                        "confidence": each_fire['confidence'], "frp": each_fire['frp'],
+                        "daynight": each_fire['daynight'], "detection_time": each_fire['detection_time'],
+                        "distance": each_fire['distance']})
+    print(fires)
+
+    return jsonify(fires)
 
 
-        
-    return redirect('/')
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')

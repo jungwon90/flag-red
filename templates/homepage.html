@@ -2,25 +2,23 @@
     {% block title %}Flag Red{% endblock %}
 
     {% block head %}
-        <script src="/static/js/test.js"></script>
         <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
         <script src="/static/js/maps.js"></script>
         <script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcPj2Lex4W5AXEhwsPQ02lAG8Axsn2hQg&callback=initMap"
         defer
         ></script>
+        <script type="text/jsx" src="/static/js/searchbutton.jsx"></script>
 
         <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
     {% endblock %}
 
     {% block body %}
         <label>Fleg Red</label>
-        <div>
-            <button class="search-type-button" id="active-fire-button">Active Fire</button>
-            <button class="search-type-button" id="past-fire-button">Past Fires</button> 
-        </div>
+        <div id="active-fire-btn"></div>
+        <div id="past-fire-btn"></div>
 
-        <div class="container" id="active-fire-search"></div>
+        <div class="container" id="search-fire-btn"></div>
         <div class="container-fluid" id="past-fire-search"></div>
 
        

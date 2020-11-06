@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+    {% block title %}Sign In{% endblock %}
+
+    {% block head %}
+    {% endblock %}
+
+    {% block body %}
+    <div class="container">
+        <div className = "row align-items-center">
+            <div className="col-10 mx-auto">
+                <form action="/signup" method="POST" id="signup-form">
+                    <label>Sign Up</label>
+                    <div class="user-id-input">
+                        <label>ID</label>
+                        <input type="text"></input>
+                        <button id="id-validation-btn">Valid?</button>
+                    </div>
+                    <label>First Name</label>
+                    <input type="text"></input>
+                    <label>Last Name</label>
+                    <input type="text"></input>
+                    <label>Password</label>
+                    <input type="text"></input>
+                    <label>Email</label>
+                    <input type="text"></input>
+                    <label>Phone Number</label>
+                    <input type="text"></input>
+                    <label>Zip Code</label>
+                    <input type="text"></input>
+                    <input type="submit" value="Sign Up"></input>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
