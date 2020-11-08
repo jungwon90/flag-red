@@ -1,4 +1,4 @@
-"use strict";
+
 
 /*
 function ShowActiveFireBtn(){
@@ -73,17 +73,21 @@ ReactDOM.render(
 
 
 
-function ShowActiveFireSearchBar(){
+function ShowCurSearchBar(){
     return (
         <div className = "row align-items-center active-fire-btn-container">
             <div className="col-10 mx-auto">
-                <form id="search-form">
-                    <label>Active Fires</label>
-                    <select id="search-by" name="search-by">
+                <form action="/search" method="GET" id="search-form">
+                    <select id="cur-search-for" name="cur-search-for">
+                        <option value="air-quality">Air Quality</option>
+                        <option value="fire">Active Fire</option>
+                        <option value="soil">Soil</option>
+                    </select>
+                    <select id="cur-search-by" name="cur-search-by">
                         <option value="by-city">By City</option>
                         <option value="by-postal-code">By Zipcode</option>
                     </select>
-                    <input type="text" name="search-input" id="search-input"></input>
+                    <input type="text" name="cur-search-input" id="cur-search-input"></input>
                     <input type="submit" value="search"></input>
                 </form>
             </div>
@@ -92,19 +96,22 @@ function ShowActiveFireSearchBar(){
 }
 
 
-function ShowPastFireSearchBar(){
+function ShowHistorySearchBar(){
     return (
         <div className = "row align-items-center past-fire-btn-container">
             <div className="col-10 mx-auto">
-                <form id="search-history-form">
-                    <label>Past Fires</label>
+                <form action="/historysearch" method="GET" id="search-history-form">
+                    <select id="search-for" name="history-search-for">
+                        <option value="air-quality">Air Quality</option>
+                        <option value="soil">Soil</option>
+                    </select>
                     <select id="history-search-by" name="history-search-by">
                         <option value="by-city">By City</option>
                         <option value="by-postal-code">By Zipcode</option>
                     </select>
                     <input type="date" name="search-date-from"></input>
                     <input type="date" name="search-date-to"></input>
-                    <input type="text" name="search-input"></input>
+                    <input type="text" name="history-search-input"></input>
                     <input type="submit" value="search"></input>
                 </form>
             </div>
@@ -114,25 +121,25 @@ function ShowPastFireSearchBar(){
 
 
 function ShowSearchBar(props){
-    const activeFireBtnClicked = props.activeFireBtnClicked;
+    const curBtnClicked = props.curBtnClicked;
 
-    if(activeFireBtnClicked) {
-        return <ShowActiveFireSearchBar />;
+    if(curBtnClicked) {
+        return <ShowCurSearchBar />;
     }
-    return <ShowPastFireSearchBar />; 
+    return <ShowHistorySearchBar />; 
 }   
 
 
-function ActiveFireBtn(props){
+function CurrentBtn(props){
     return (
-        <button className="search-type-button" onClick={props.onClick}>Active Fire</button>
+        <button className="search-current-button" onClick={props.onClick}>Current</button>
     );
 }
 
 
-function PastFireBtn(props){
+function HistoryBtn(props){
     return(
-        <button className="search-type-button" onClick={props.onClick}>Past Fires</button> 
+        <button className="search-history-button" onClick={props.onClick}>History</button> 
     );
 }   
 
@@ -141,29 +148,29 @@ function PastFireBtn(props){
 class SearchBtnControl extends React.Component {
     constructor(props) {
         super(props);
-        this.handleActiveFireBtnClick = this.handleActiveFireBtnClick.bind(this);
-        this.handlePastFireBtnClick = this.handlePastFireBtnClick.bind(this);
-        this.state = { activeFireBtnClicked : false};
+        this.handleCurBtnClick = this.handleCurBtnClick.bind(this);
+        this.handleHistoryBtnClick = this.handleHistoryBtnClick.bind(this);
+        this.state = { curBtnClicked : false};
     }
 
-    handleActiveFireBtnClick(){
-        this.setState({activeFireBtnClicked: true});
+    handleCurBtnClick(){
+        this.setState({curBtnClicked : true});
     }
 
-    handlePastFireBtnClick(){
-        this.setState({activeFireBtnClicked: false});
+    handleHistoryBtnClick(){
+        this.setState({curBtnClicked: false});
     }
 
     render() {
-        const activeFireBtnClicked = this.state.activeFireBtnClicked
-        let button1, button2;
-        button1 = <ActiveFireBtn onClick={this.handleActiveFireBtnClick} />;
-        button2 = <PastFireBtn onClick={this.handlePastFireBtnClick} />;
+        const curBtnClicked = this.state.curBtnClicked;
+        let curAirBtn, airHisBtn;
+        curAirBtn = <CurrentBtn onClick={this.handleCurBtnClick} />;
+        airHisBtn = <HistoryBtn onClick={this.handleHistoryBtnClick} />;
         
         return (
             <div>
-                {button1} {button2}
-                <ShowSearchBar activeFireBtnClicked={activeFireBtnClicked}/> 
+                {curAirBtn} {airHisBtn}
+                <ShowSearchBar curBtnClicked={curBtnClicked}/> 
             </div>
         );
     }
@@ -171,6 +178,5 @@ class SearchBtnControl extends React.Component {
 
 ReactDOM.render(
     <SearchBtnControl />,
-    document.querySelector('#search-fire-btn')
+    document.querySelector('#search')
 );
-

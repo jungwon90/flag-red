@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request, redirect, flash
-
+from model import db, connect_to_db, User, Twilio, UserAirQualHistory, AirQualHistory
 import os
 import secrets
 import requests
@@ -17,75 +17,131 @@ app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 API_KEY = os.environ['FIRE_KEY']
 
 # fire data for markers on MAP, a list of dictionaries
-fires= []
 
 @app.route('/')
 def homepage():
+    """ Show homepage """
 
     return render_template('homepage.html')
 
 
-@app.route('/search.json', methods=['GET'])
-def find_cur_airqual_and_fire():
-    """ Search for active fires """
+@app.route('/search', methods=['GET'])
+def search_result():
+    """ Search for Air Quality/Active Fire/Pollen """
 
-    #Use form data from the user to populate any search parameters
-    search_by = request.form.get('search-by')
-    search_input = request.form.get('search-input')
+    latitude = 0
+    longitude = 0
 
-    print(search_by, search_input)
-
-    air_url = f'https://api.ambeedata.com/latest/{search_by}/'
-    
-    if search_by == 'by-postal-code':
-        querystring = {'postalCode': search_input, 'countryCode': "US"}
-    else :
-        querystring = {'city': search_input}
-
+    # API request headers applied to all kinds of request
     headers = {
         'x-api-key': API_KEY,
         'Content-type': "application/json"
     }
-    # Make a request to the fire/Air Search endpoint to search for events
-    air_res = requests.get(air_url, headers=headers, params=querystring)
 
-    # convert json to python dictionary
-    airquality_data = air_res.json() 
-    
-    # get the very first(recent) data/result
-    airqual_dictionary = airquality_data['stations'][0]
-    
-    print(airqual_dictionary['lat'], airqual_dictionary['lng'])
+    # Get user inputs from the form
+    search_for = request.args.get('cur-search-for')
+    search_by = request.args.get('cur-search-by')
+    search_input = request.args.get('cur-search-input') 
+    print(search_for, search_by, search_input)
 
-    # get the coordinate of the city/zipcode for requesting fire data
+    # Request air quality data from API -> Store in a variable called "air_quality"
+    air_url = f'https://api.ambeedata.com/latest/{search_by}/'
+
+    if search_by == 'by-postal-code':
+        air_querystring = {'postalCode': search_input, 'countryCode': "US"}
+    else :
+        air_querystring = {'city': search_input}
+
+    air_qual_res = requests.get(air_url, headers=headers, params=air_querystring)
+    air_quality = air_qual_res.json() # convert json to python dictionary
+    print(air_quality)
+
+    # Extract 1.latitude 2.longitue from the air_quality(current air quality data)
+    airqual_dictionary = air_quality['stations'][0] #get the very first(recent) data/result
     latitude = airqual_dictionary['lat']
     longitude = airqual_dictionary['lng']
+    print(latitude, longitude)
 
-    fire_url = "https://api.ambeedata.com/latest/fire"
 
-    fire_querystring = {"lat": str(latitude), "lng": str(longitude)}
-    #fire_querystring = {"lat": "36.778259", "lng": "-119.417931"}
+    # if (search_for == "air-quality"), return jsonify(air_quality)
+    if search_for == "air-quality":
+        #return jsonify(air_quality)
+        print('air_quality')
 
-    fire_res = requests.get(fire_url, headers=headers, params=fire_querystring)
-  
-    fire_data = fire_res.json()
-    print(fire_data)
+    # else if (search_for == "fire")
+    elif search_for == "fire":
+        # Get fire data from the API using latitude, longitude that got extracted above and return it
+        fire_url = "https://api.ambeedata.com/latest/fire"
+        fire_querystring = {"lat": str(latitude), "lng": str(longitude)}
 
-    if len(fire_data['data']) == 0:
-        flash(f'No active fire around {search_input}')
-    else:
-        #put the coordinates into the coordinates list
-        for each_fire in fire_data['data']: 
-            fires.append({"lat": each_fire['lat'], "lon": each_fire['lon'],
-                        "confidence": each_fire['confidence'], "frp": each_fire['frp'],
-                        "daynight": each_fire['daynight'], "detection_time": each_fire['detection_time'],
-                        "distance": each_fire['distance']})
-    print(fires)
+        fire_res = requests.get(fire_url, headers=headers, params=fire_querystring)
+        fire_data = fire_res.json() # convert json to python dictionary
+        print(fire_data)
+        
+        if len(fire_data['data']) == 0:
+            #if there's no active fire, return a string 'No Active Fire around search location"
+            #return jsonify({"message": f'No Active Fire around {search_input}'})
+        else:
+            #return jsonify(fire_data)
 
-    return jsonify(fires)
+        print('fire')
+
+    # else if (search_for == "pollen")
+    elif search_for == "soil":
+        # Get pollen data from the API using latitude, longitude that got extracted above and return it
+        soil_url = "https://api.ambeedata.com/soil/latest/by-lat-lng"
+        soil_querystring = {"lat": str(latitude), "lng": str(longitude)}
+
+        soil_res = requests.get(soil_url, headers=headers, params=soil_querystring)
+        soil_data = soil_res.json() # convert json to python dictionary
+        print(soil_data)
+        print('soil')
+
+    return redirect('/')
+
+
+
+@app.route('/historysearch', methods=['GET'])
+def history_search_result():
+    """ Search for Air Quality/Pollen History"""
+    
+    latitude = 0
+    longitude = 0
+
+    # API request headers applied to all kinds of request
+    headers = {
+        'x-api-key': API_KEY,
+        'Content-type': "application/json"
+    }
+
+    # Get user inputs from the form
+    search_for = request.args.get('history-search-for')
+    search_by = request.args.get('history-search-by')
+    search_date_from = request.args.get('search-date-from')
+    search_date_to = request.args.get('search-date-to')
+    search_input = request.args.get('history-search-input') 
+    print(search_for, search_by, search_input)
+    # Request current air quality from API -> Store in a variable called "cur_air_quality"
+
+    # Extract the 1.latitude 2.longitude from cur_air_quality(current air quality data)
+
+    # if (search_for == "air-quality")
+
+        # Get air quality history data from API using the latitude, longitude above and return it
+
+
+    # else if (search_for == "pollen")
+
+        # Get pollen history data from API using latitude, longitude above and return it
+
+    pass
+
+
+
 
 
 
 
 if __name__ == "__main__":
+    connect_to_db(app)
     app.run(debug=True, host='0.0.0.0')

@@ -12,17 +12,11 @@ let fire_data = [{
 
 let fire_markers = {};
 
-let firemap, airQmap;
+let map;
 
 function initMap() {
- 
-  firemap = new google.maps.Map(document.getElementById("fire-map"), {
-    center: { lat:  37.77397, lng: -122.431297 },
-    zoom: 8,
-    fullscreenControl: false 
-  });
 
-  airQmap = new google.maps.Map(document.getElementById('airquality-map'), {
+  map = new google.maps.Map(document.getElementById('map'), {
     center: { lat:  37.77397, lng: -122.431297 },
     zoom: 8,
     fullscreenControl: false 
@@ -70,6 +64,7 @@ const create_markers = (fires) => {
 
 */
 
+/*
 // retrieving the fire location cooordinates 
 $('#search-form').on('submit', (evt)=>{
   evt.preventDefault();
@@ -80,7 +75,7 @@ $('#search-form').on('submit', (evt)=>{
     'search-input': $('#search-input').val()
   };
 
-  $.get('/search.json', formInputs, (response)=>{
+  $.get('/search', formInputs, (response)=>{
     
     console.log(response);
     for (const fire of response){
@@ -89,7 +84,7 @@ $('#search-form').on('submit', (evt)=>{
   });
 
 });
-
+*/
 
 
 

@@ -8,7 +8,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     user_id = db.Column(db.String(10), primary_key=True)
-    fname = db.Column(db.String(20) nullable=False)
+    fname = db.Column(db.String(20), nullable=False)
     lname = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(30), unique=True, nullable=False)
@@ -47,7 +47,7 @@ class UserAirQualHistory(db.Model):
     air_history_id = db.Column(db.Integer, db.ForeignKey("airqualhistories.air_history_id"))
 
     user = db.relationship('User')
-    airqual_histories = db.relationship('AirQualHistory' backref="user_airqual_history")
+    airqual_histories = db.relationship('AirQualHistory', backref="user_airqual_history")
 
 class AirQualHistory(db.Model):
     """ A history of Air quality """
@@ -61,18 +61,18 @@ class AirQualHistory(db.Model):
 
     __tablename__ = "airqualhistories"
 
-    air_history_id = db.Column(db.Integer, primary_key=True, autoincrement=Ture)
-    no2 = db.Column(db.float) # Nitrogen dioxide conc(ppb)
-    pm10 = db.Column(db.float) # Particulate matter < 10um (ug/m3)
-    pm2_5 = db.Column(db.float) # Particulate matter < 2.5um (ug/m3)
-    co = db.Column(db.float) # Carbon monoxide conc (ppm)
-    so2 = db.Column(db.float) # Sulphur dioxide conc (ppb)
-    ozone = db.Column(db.float) # OZONE conc (ppb)
+    air_history_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    no2 = db.Column(db.Float) # Nitrogen dioxide conc(ppb)
+    pm10 = db.Column(db.Float) # Particulate matter < 10um (ug/m3)
+    pm2_5 = db.Column(db.Float) # Particulate matter < 2.5um (ug/m3)
+    co = db.Column(db.Float) # Carbon monoxide conc (ppm)
+    so2 = db.Column(db.Float) # Sulphur dioxide conc (ppb)
+    ozone = db.Column(db.Float) # OZONE conc (ppb)
     aqi = db.Column(db.Integer, nullable=False) #air quality index
     lat = db.Column(db.String(10), nullable=False) #latitude
     lng = db.Column(db.String(10), nullable=False) #longitude
-    created_at = db.Column(db.DateTime nullable = False) # ISO timestamp of event in UTC
-    postal_code = db.Column(db.String(10) nullable = False) 
+    created_at = db.Column(db.DateTime, nullable = False) # ISO timestamp of event in UTC
+    postal_code = db.Column(db.String(10), nullable = False) 
     major_pollutant = db.Column(db.String)
 
 
