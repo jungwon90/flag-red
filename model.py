@@ -37,19 +37,22 @@ class Twilio(db.Model):
         return f'<Twilio twilio_id={self.twilio_id} user_id={self.user_id}>'
 
 
-class UserAirQualHistory(db.Model):
-    """ Air Quality History based on each user's location """
+class UserProfileAirForecast(db.Model):
+    """ Shows an AirForecast object """
 
-    __tablename__ = "userairqualhistories"
+    __tablename__ = "userairforecasts"
 
-    user_air_history_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_air_forecast_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.String(10), db.ForeignKey("users.user_id"))
-    air_history_id = db.Column(db.Integer, db.ForeignKey("airqualhistories.air_history_id"))
+    air_forecast_id = db.Column(db.Integer, db.ForeignKey("airforecasts.air_forecast_id"))
 
     user = db.relationship('User')
-    airqual_histories = db.relationship('AirQualHistory', backref="user_airqual_history")
+    air_forecasts = db.relationship('AirForcast', backref="user_airforecast")
 
-class AirQualHistory(db.Model):
+    def __repr__(self):
+        return f'<UserProfileAirForecast user_air_forecast_id={self.user_air_forecast_id} user_id={self.user_id}>'
+
+class AirForecast(db.Model):
     """ A history of Air quality """
     # Air Quality Index 
     # 0 ~ 50 : good
@@ -59,9 +62,9 @@ class AirQualHistory(db.Model):
     # 201 ~ 300 : very unhealthy
     # 301 ~ higher : hazardous
 
-    __tablename__ = "airqualhistories"
+    __tablename__ = "airforecasts"
 
-    air_history_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    air_forecast_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     no2 = db.Column(db.Float) # Nitrogen dioxide conc(ppb)
     pm10 = db.Column(db.Float) # Particulate matter < 10um (ug/m3)
     pm2_5 = db.Column(db.Float) # Particulate matter < 2.5um (ug/m3)
@@ -77,8 +80,8 @@ class AirQualHistory(db.Model):
 
 
     def __repr__(self):
-        """ Shows an AirQualHistory object """
-        return f'<AirQualHistory air_history_id={self.air_history_id} aqi={self.aqi}>'
+        """ Shows an AirForecast object """
+        return f'<AirQualHistory air_history_id={self.air_forecast_id} aqi={self.aqi}>'
 
 
 def connect_to_db(flask_app, db_uri='postgresql:///red-flag', echo=True):

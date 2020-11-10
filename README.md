@@ -25,7 +25,7 @@ caused by fires and advise them on the safest places outdoors for a run or even 
 
 Fire data API from ambee. Air quality API from ambee.
 
-Python, Javascript, HTML5, CSS3, Flask, Jinja, React, Bootstrap
+Python, Javascript, HTML5, CSS3, Flask, React, Bootstrap
 
 
 

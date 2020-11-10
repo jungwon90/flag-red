@@ -1,7 +1,7 @@
 """CRUD operations."""
 from flask_sqlalchemy import SQLAlchemy 
 from datetime import datetime
-from model import db, User, Twilio, UserAirQualHistory, AirQualHistory, connect_to_db
+from model import db, User, Twilio, UserProfileAirForecast, AirForecast, connect_to_db
 
 ######## User #########
 
@@ -44,7 +44,7 @@ def create_twilio(user_id, message):
 
 
 
-######## UserAirQualHistory ########
+######## UserProfileAirForecast ########
 
 def create_user_air_quality_history(user_id, air_history_id):
     """ Create and return a user air quality history """
@@ -55,7 +55,7 @@ def create_user_air_quality_history(user_id, air_history_id):
 
 
 
-######## AirQualHistory ########
+######## AirForecast ########
 
 def create_air_quality_history(no2, pm10, pm2_5, co, so2, ozone, aqi, lat, lng, created_at, postal_code, major_pollutant):
     """ Create and return a new air quality history """

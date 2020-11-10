@@ -25,9 +25,9 @@ body {
 
 /* Always set the map height explicitly to define the size of the div
         * element that contains the map. */
-#map {
+#map-container {
     height: 70%;
-    width: 70%;
+    width: 100%;
 }
     
 .navbar-list {

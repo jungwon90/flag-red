@@ -69,56 +69,6 @@ ReactDOM.render(
 <ShowPastFireBtn />, document.querySelector('#past-fire-btn')
 );
 
-*/
-
-
-
-function ShowCurSearchBar(){
-    return (
-        <div className = "row align-items-center active-fire-btn-container">
-            <div className="col-10 mx-auto">
-                <form action="/search" method="GET" id="search-form">
-                    <select id="cur-search-for" name="cur-search-for">
-                        <option value="air-quality">Air Quality</option>
-                        <option value="fire">Active Fire</option>
-                        <option value="soil">Soil</option>
-                    </select>
-                    <select id="cur-search-by" name="cur-search-by">
-                        <option value="by-city">By City</option>
-                        <option value="by-postal-code">By Zipcode</option>
-                    </select>
-                    <input type="text" name="cur-search-input" id="cur-search-input"></input>
-                    <input type="submit" value="search"></input>
-                </form>
-            </div>
-        </div>
-    );
-}
-
-
-function ShowHistorySearchBar(){
-    return (
-        <div className = "row align-items-center past-fire-btn-container">
-            <div className="col-10 mx-auto">
-                <form action="/historysearch" method="GET" id="search-history-form">
-                    <select id="search-for" name="history-search-for">
-                        <option value="air-quality">Air Quality</option>
-                        <option value="soil">Soil</option>
-                    </select>
-                    <select id="history-search-by" name="history-search-by">
-                        <option value="by-city">By City</option>
-                        <option value="by-postal-code">By Zipcode</option>
-                    </select>
-                    <input type="date" name="search-date-from"></input>
-                    <input type="date" name="search-date-to"></input>
-                    <input type="text" name="history-search-input"></input>
-                    <input type="submit" value="search"></input>
-                </form>
-            </div>
-        </div>
-    );
-}
-
 
 function ShowSearchBar(props){
     const curBtnClicked = props.curBtnClicked;
@@ -178,5 +128,37 @@ class SearchBtnControl extends React.Component {
 
 ReactDOM.render(
     <SearchBtnControl />,
+    document.querySelector('#search')
+);
+
+*/
+
+
+function SearchBar(){
+    return (
+        <div className = "row align-items-center active-fire-btn-container">
+            <div className="col-10 mx-auto">
+                <form id="search-form">
+                    <label>What are you looking for?</label>
+                    <select id="cur-search-for" name="cur-search-for">
+                        <option value="air-quality">Air Quality</option>
+                        <option value="fire">Active Fire</option>
+                        <option value="soil">Soil</option>
+                    </select>
+                    <select id="cur-search-by" name="cur-search-by">
+                        <option value="by-city">By City</option>
+                        <option value="by-postal-code">By Zipcode</option>
+                    </select>
+                    <input type="text" name="cur-search-input" id="cur-search-input"></input>
+                    <input type="submit" value="search"></input>
+                </form>
+            </div>
+        </div>
+    );
+}
+
+
+ReactDOM.render(
+    <SearchBar />,
     document.querySelector('#search')
 );
