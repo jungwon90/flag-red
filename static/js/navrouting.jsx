@@ -4,6 +4,10 @@ const Router = ReactRouterDOM.BrowserRouter;
 const Route = ReactRouterDOM.Route;
 const Switch = ReactRouterDOM.Switch;
 const Link = ReactRouterDOM.Link;
+
+let airData;
+let firData;
+let soilData;
 console.log("nav bar!");
 
 
@@ -126,10 +130,11 @@ function Login(){
 }
 
 function Home(){
+   
     return (
         <React.Fragment> 
             <label>Fleg Red</label>
-            <div id="search"></div>
+            <SearchBar />
             <h3>Map</h3>
             <MapContainer />
             <div>Air quality Forecast</div>
@@ -178,15 +183,105 @@ function Logout(){
 }
 
 
+//-- Search bar --//
+
+
+function SearchBar () {
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [isError, setIsError] = React.useState(false);
+    const [values, setValues] = React.useState({
+        'cur-search-for': '',
+        'cur-search-by': '',
+        'cur-search-input': ''
+    })
+    console.log(isSubmitting, isError, values);
+
+    const handleSubmit = async event =>{
+        //get the values from the form
+        const formInputs = {
+            'cur-search-for': document.querySelector('#cur-search-for').value,
+            'cur-search-by': document.querySelector('#cur-search-by').value,
+            'cur-search-input': document.querySelector('#cur-search-input').value
+        };
+        setValues(formInputs); //updating state of values with form inputs
+        setIsSubmitting(true); //updating state of isSubmitting
+
+        event.preventDefault();
+        alert('onSubmit event handler is working');
+        console.log(isSubmitting, isError, values);
+    
+        //get ruquest to /search in the server
+        $.get('/search', formInputs, (response)=>{
+             //if search-for =='air-quality'
+            if ( formInputs['cur-search-for'] == 'air-quality'){
+                //store the response data into 'airData' variable
+                airData = response
+                console.log(airData);
+    
+            //if search-for == 'fire
+            } else if(formInputs['cur-search-for'] == 'fire'){
+                //store the response data into 'firData' variable
+                fireData = response
+                console.log(fireData);
+    
+                fires = fireData['data'];
+                console.log(fires)
+                
+            //if search-for == 'soil
+            } else if(formInputs['cur-search-for'] == 'soil'){
+                //store the response data into 'soilData' variable
+                soilData = response
+                console.log(soilData)
+            } 
+            
+        }).fail(() => {
+            setIsError(true);
+            alert((`We were unable to retrieve data about ${formInputs['cur-search-for']}`));       
+        });
+
+    }
+    
+    
+    return (
+        <div className = "row align-items-center active-fire-btn-container">
+            <div className="col-10 mx-auto">
+                <form onSubmit={handleSubmit} id="search-form">
+                    <label>What are you looking for?</label>
+                     <select id="cur-search-for" name="cur-search-for">
+                        <option value="air-quality">Air Quality</option>
+                        <option value="fire">Active Fire</option>
+                        <option value="soil">Soil</option>
+                    </select>
+                    <select id="cur-search-by" name="cur-search-by">
+                        <option value="by-city">By City</option>
+                        <option value="by-postal-code">By Zipcode</option>
+                    </select>
+                    <input type="text" name="cur-search-input" id="cur-search-input"></input>
+                    <input type="submit" value="search"></input>
+                </form>
+            </div>
+        </div>
+    );
+    
+    
+}
+
+
 //----- Map -----//
 function ShowMarkers(props){
+    
 
+
+
+    return(
+        <div></div>
+    );
 }
 
 function MapComponent(props) {
     console.log('rendering the map')
     const options = props.options;
-    const ref = React.useRef();
+    const ref = React.useRef(); // creating Ref object
 
     React.useEffect(() => {
 
@@ -224,7 +319,6 @@ function MapComponent(props) {
 
 function MapContainer(props) {
     const [ map, setMap] = React.useState();
-    const [ searchBox, setSearchBox] = React.useState();
     const [ options, setOptions] = React.useState({
       center: { lat: 37.77397, lng: -122.431297},
       zoom: 8
@@ -234,12 +328,14 @@ function MapContainer(props) {
       width: '100%',
       height: '60vh'
     }
-  
+    
+    //useCallback -> optimize the rendering behavior of React components.
     const MainMap = React.useCallback( 
       <MapComponent
         map={map} 
         setMap={setMap} 
         options={options}
+        setOptions={setOptions}
         mapDimensions={mapDimensions}
       />, [options])
   
@@ -255,8 +351,8 @@ function MapContainer(props) {
       <div id="map-container" className="container">
         {/* <LocationSetter setSearchBox={setSearchBox} searchBox={searchBox} setOptions={setOptions} options={options}/> */}
         {MainMap}
-        {/* {<ShowMarkers map={map} view={props.view}/>} */}
-      </div>
+        {/* <ShowMarkers map={map} onClick={onMarkerClick}/>  */}
+      </div> 
     )
   }
 

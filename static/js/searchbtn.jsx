@@ -134,31 +134,3 @@ ReactDOM.render(
 */
 
 
-function SearchBar(){
-    return (
-        <div className = "row align-items-center active-fire-btn-container">
-            <div className="col-10 mx-auto">
-                <form id="search-form">
-                    <label>What are you looking for?</label>
-                    <select id="cur-search-for" name="cur-search-for">
-                        <option value="air-quality">Air Quality</option>
-                        <option value="fire">Active Fire</option>
-                        <option value="soil">Soil</option>
-                    </select>
-                    <select id="cur-search-by" name="cur-search-by">
-                        <option value="by-city">By City</option>
-                        <option value="by-postal-code">By Zipcode</option>
-                    </select>
-                    <input type="text" name="cur-search-input" id="cur-search-input"></input>
-                    <input type="submit" value="search"></input>
-                </form>
-            </div>
-        </div>
-    );
-}
-
-
-ReactDOM.render(
-    <SearchBar />,
-    document.querySelector('#search')
-);
