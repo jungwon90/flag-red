@@ -1,5 +1,7 @@
 from flask import Flask, render_template, jsonify, request, redirect, flash
 from model import db, connect_to_db, User, Twilio, UserProfileAirForecast, AirForecast
+from flask_sqlalchemy import SQLAlchemy
+
 import os
 import sys
 import secrets
@@ -45,7 +47,7 @@ def search_result():
     search_by = request.args.get('cur-search-by')
     search_input = request.args.get('cur-search-input') 
     print(search_for, search_by, search_input)
-    
+
     try:
         # Request air quality data from API -> Store in a variable called "air_quality"
         air_url = f'https://api.ambeedata.com/latest/{search_by}'

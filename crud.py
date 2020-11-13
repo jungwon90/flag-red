@@ -3,13 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from model import db, User, Twilio, UserProfileAirForecast, AirForecast, connect_to_db
 
+
 ######## User #########
 
-def create_user(user_id, fname, lname, password, email, phone_num, zipcode):
+def create_user(user_id, fname, lname, password, email, phone_num, city):
     """ Create and return a new user """
 
     user = User(user_id = user_id, fname = fname, lname = lname, password = password, 
-                email = email, phone_num = phone_num, zipcode = zipcode)
+                email = email, phone_num = phone_num, city = city)
 
     db.session.add(user)
     db.session.commit()
@@ -32,52 +33,60 @@ def get_user_by_phone_num(phone_num):
 
 ######## Twilio ########
 
-def create_twilio(user_id, message):
+def create_twilio(user_obj):
     """ Create and return a new twilio """
 
-    twilio = Twilio(user_id = user_id, message = message)
+    twilio = Twilio(user = user_obj)
 
-    db.session.add(user)
+    db.session.add(twilio)
     db.session.commit()
 
-    return user
+    return twilio
+
+
+def get_twilio_users():
+    """ Return all users having Twilio SMS service """
+
+    return Twilio.query.all()
 
 
 
 ######## UserProfileAirForecast ########
 
-def create_user_air_quality_history(user_id, air_history_id):
-    """ Create and return a user air quality history """
+def create_user_profile_airforecast(user, airforecast):
+    """ Create and return a user profile air forecast """
 
-    user_airqual_history = UserAirQualHistory(user_id = user_id, air_history_id = air_history_id)
+    user_profile_airforecast = UserProfileAirForecast(user=user, air_forecast=airforecast)
 
-    return user_airqual_history
+    db.session.add(user_profile_airforecast)
+    db.session.commit()
+
+    return user_profile_airforecast
 
 
 
 ######## AirForecast ########
 
-def create_air_quality_history(no2, pm10, pm2_5, co, so2, ozone, aqi, lat, lng, created_at, postal_code, major_pollutant):
-    """ Create and return a new air quality history """
 
-    airqual_history = AirQualHistory(no2 = no2, pm10 = pm10, pm2_5 = pm2_5, so2 = so2,
-                                    ozone = ozone, aqi = aqi, lat = lat, lng = lng, 
-                                    created_at = created_at, postal_code = postal_code,
-                                    major_pollutant = major_pollutant)
+def create_airforecast(pm10, pm25, uvi, dominentpol, aqi, lat, lng, time, city):
+    """ Create and return a new air forecast """
 
-    db.session.add(user)
+    air_forecast = AirForecast(pm10=pm10, pm25=pm25, uvi=uvi, dominentpol=dominentpol,
+                            aqi=aqi, lat=lat, lng=lng, time=time, city=city)
+
+    db.session.add(air_forecast)
     db.session.commit()
 
-    return airqual_history
+    return air_forecast
 
 
-def get_airquality_histories():
-    """ Return all air quality histories """
+def get_airforecasts():
+    """ Return all air forecasts """
 
-    return AirQualHistory.query.all()
+    return AirForecast.query.all()
 
 
-def get_airquality_histories_by_zipcode(zipcode):
-    """ Return airquality histories by the date """
+def get_airforecast_by_city(city):
+    """ Return air forecast by zipcode """
 
-    return AirQualHistory.query.filter(AirQualHistory.postal_code == zipcode).all()
+    return AirForecast.query.filter(AirForecast.postal_code == zipcode).all()
