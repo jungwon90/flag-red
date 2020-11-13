@@ -139,36 +139,48 @@ function Signup(){
                                 setIdInput(e.target.value);}} type="text" name="input-id"></input>
                             <button onClick={handleValidId} id="id-validation-btn">Valid?</button>
                         </div>
-                        <label>First Name</label>
-                        <input onChange={e => {
-                            e.preventDefault();
-                            setFirstName(e.target.value)
-                        }} type="text" name="first-name"></input>
-                        <label>Last Name</label>
-                        <input onChange={e =>{
-                            e.preventDefault();
-                            setLastName(e.target.value);
-                        }}type="text" name="last-name"></input>
-                        <label>Password</label>
-                        <input onChange={e =>{
-                            e.preventDefault();
-                            setPassword(e.target.value);
-                        }} type="text" name="password"></input>
-                        <label>Email</label>
-                        <input onChange={e =>{
-                            e.preventDefault();
-                            setEmail(e.target.value);
-                        }} type="text" name="email"></input>
-                        <label>Phone Number</label>
-                        <input onChange={e =>{
-                            e.preventDefault();
-                            setPhoneNumber(e.target.value);
-                        }} type="text" name="phone-number"></input>
-                        <label>City</label>
-                        <input onChange={e =>{
-                            e.preventDefault();
-                            setCity(e.target.value);
-                        }} type="text" name="city"></input>
+                        <div>
+                            <label>First Name</label>
+                            <input onChange={e => {
+                                e.preventDefault();
+                                setFirstName(e.target.value)
+                            }} type="text" name="first-name"></input>
+                        </div>
+                        <div>
+                            <label>Last Name</label>
+                            <input onChange={e =>{
+                                e.preventDefault();
+                                setLastName(e.target.value);
+                            }}type="text" name="last-name"></input>
+                        </div>
+                        <div>
+                            <label>Password</label>
+                            <input onChange={e =>{
+                                e.preventDefault();
+                                setPassword(e.target.value);
+                            }} type="text" name="password"></input>
+                        </div>
+                        <div>
+                            <label>Email</label>
+                            <input onChange={e =>{
+                                e.preventDefault();
+                                setEmail(e.target.value);
+                            }} type="text" name="email"></input>
+                        </div>
+                        <div>
+                            <label>Phone Number</label>
+                            <input onChange={e =>{
+                                e.preventDefault();
+                                setPhoneNumber(e.target.value);
+                            }} type="text" name="phone-number"></input>
+                        </div>
+                        <div>
+                            <label>City</label>
+                            <input onChange={e =>{
+                                e.preventDefault();
+                                setCity(e.target.value);
+                            }} type="text" name="city"></input>
+                        </div>
                         <input type="submit" value="Sign Up"></input>
                     </form>
                 </div>
@@ -179,25 +191,41 @@ function Signup(){
 
 
 function Login(){
-
+    const [id, setId] = React.useState('');
+    const [password, setPassword] = React.useState('');
 
     function handleSubmit(e){
         e.preventDefault();
+        
+        const formInputs = {
+            'id': id,
+            'password': password
+        }
+        //post request to server
+        $.post('/login', formInputs, (res) =>{
+            alert(res['message']);
+        });
     }
 
     return (
         <div className="container">
             <div className = "row align-items-center">
                 <div className="col-10 mx-auto">
-                    <form onSubmit={handleSubmit} action="login" method="POST" id="login-form">
+                    <form onSubmit={handleSubmit} id="login-form">
                         <label>LOG IN</label>
                         <div>
                             <label>ID</label>
-                            <input type="text" name="id"></input>
+                            <input onChange={e => {
+                                e.preventDefault();
+                                setId(e.target.value);
+                            }} type="text" name="id"></input>
                         </div>
                         <div>
                             <label>PASSWORD</label>
-                            <input type="text" name="password"></input>
+                            <input onChange={e =>{
+                                e.preventDefault();
+                                setPassword(e.target.value);
+                            }} type="text" name="password"></input>
                         </div>
                         <input type="submit" value="Log-In"></input>
                     </form>
@@ -242,6 +270,12 @@ function Contact(){
 
 
 function Profile(){
+
+    //get request to server to get user profile data from DB
+    $.get('/profile.json', (res)=>{
+
+    });                       
+
     return (
         <div>
             <h3>Profile</h3>

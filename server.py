@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, redirect, flash
+from flask import Flask, render_template, jsonify, request, redirect, session, flash
 from model import db, connect_to_db, User, Twilio, UserProfileAirForecast, AirForecast
 from flask_sqlalchemy import SQLAlchemy
 import crud
@@ -25,6 +25,14 @@ API_KEY2 = os.environ['WAQI_KEY']
 @app.route('/')
 def homepage():
     """ Show homepage """
+
+    if 'current_user' in session:
+        current_user = session['current_user']
+    else:
+        current_user = session['current_user'] = ''
+    
+    if session['current_user'] != '':
+        flash('Logged in!')
 
     return render_template('homepage.html')
 
@@ -132,9 +140,11 @@ def search_result():
 def handle_valid_user():
     """ Return a JSON response with all user_ids in DB """
 
+    # Get all the users from DB
     all_users = crud.get_users();
     all_user_ids = [];
     
+    # loop over all user objects, extract user_id and append it to all_user_ids list
     for user in all_users:
         all_user_ids.append(user.user_id);
 
@@ -145,7 +155,8 @@ def handle_valid_user():
 @app.route('/signup', methods=['POST'])
 def handle_signup():
     """ Create a user and store the user in DB """
-
+    
+    # user inputs from the form
     input_id = request.form.get('input-id')
     first_name = request.form.get('first-name')
     last_name = request.form.get('last-name')
@@ -154,9 +165,44 @@ def handle_signup():
     phone_number = request.form.get('phone-number')
     city = request.form.get('city')
 
+    # Create a user and store into DB
     crud.create_user(input_id, first_name, last_name, password, email, phone_number, city)
 
     return jsonify({"success": True})
+
+
+
+@app.route('/login', methods=['POST'])
+def handle_login():
+    """ Log user into app """
+
+    # user inputs from the form
+    user_id = request.form.get('id')
+    password = request.form.get('password')
+
+    # Get user by id from DB
+    user = crud.get_user_by_id(user_id)
+
+    # session = {
+    # 'current_user': user_id}
+
+    # if there's user, that means the user_id exists in DB
+    if user:
+        if user.password == password:
+            # Create session and store user_id
+            session['current_user'] = user.user_id
+
+            return jsonify({'message': 'Logged in!'})
+        else:
+            session['current_user'] = ''
+            return jsonify({'message': 'Wrong password!'})    
+    else:
+        return jsonify({'message': 'Wrong ID!'})
+
+
+@app.route('/profile.json')
+def handle_profile():
+    pass
 
 
 if __name__ == "__main__":

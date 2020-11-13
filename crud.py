@@ -24,10 +24,10 @@ def get_users():
     return User.query.all()
 
 
-def get_user_by_phone_num(phone_num):
+def get_user_by_id(user_id):
     """ Return a user by phone number """
 
-    return User.query.filter(User.phone_num == phone_num).first()
+    return User.query.filter(User.user_id == user_id).first()
 
 
 
