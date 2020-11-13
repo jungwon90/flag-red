@@ -74,29 +74,101 @@ function App() {
 
 
 function Signup(){
+    const [idInput, setIdInput] = React.useState('');
+    const [firstName, setFirstName] = React.useState('');
+    const [lastName, setLastName] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [phoneNumber, setPhoneNumber] = React.useState('');
+    const [city, setCity] = React.useState('');
+
+    console.log(idInput, firstName, lastName, password, email, phoneNumber, city);
+
+    function handleValidId(e){
+        e.preventDefault();
+        //get request to sever to check all the ids with the given id. check if the idInput is valid
+        $.get('/valid.json', (res) =>{
+            console.log(res);
+            let isValid = true;
+            for(const userId of res){
+                //if the id is valid, alert(id is valid)
+                if(userId === idInput){
+                    alert('This ID is not valid');
+                    isValid = false;
+                    break;
+                }
+            }
+
+            if(isValid){
+                alert('This ID is valid');
+            }
+        });
+    }
+
+    function handleSubmit(e){
+        e.preventDefault();
+
+        const formInputs = {
+            'input-id': idInput,
+            'first-name': firstName,
+            'last-name': lastName,
+            'password': password,
+            'email': email,
+            'phone-number': phoneNumber,
+            'city': city
+        }
+
+        $.post('/signup', formInputs, (res) =>{
+            console.log(res);
+            if(res['success']){
+                alert('Account created! Please log in!');
+            }
+        });
+    }
+
     return (
         <div className="container">
             <div className = "row align-items-center">
                 <div className="col-10 mx-auto">
-                    <form action="/signup" method="POST" id="signup-form">
+                    <form onSubmit={handleSubmit} id="signup-form">
                         <label>Sign Up</label>
                         <div className="user-id-input">
                             <label>ID</label>
-                            <input type="text"></input>
-                            <button id="id-validation-btn">Valid?</button>
+                            <input onChange={e => { 
+                                e.preventDefault();
+                                setIdInput(e.target.value);}} type="text" name="input-id"></input>
+                            <button onClick={handleValidId} id="id-validation-btn">Valid?</button>
                         </div>
                         <label>First Name</label>
-                        <input type="text"></input>
+                        <input onChange={e => {
+                            e.preventDefault();
+                            setFirstName(e.target.value)
+                        }} type="text" name="first-name"></input>
                         <label>Last Name</label>
-                        <input type="text"></input>
+                        <input onChange={e =>{
+                            e.preventDefault();
+                            setLastName(e.target.value);
+                        }}type="text" name="last-name"></input>
                         <label>Password</label>
-                        <input type="text"></input>
+                        <input onChange={e =>{
+                            e.preventDefault();
+                            setPassword(e.target.value);
+                        }} type="text" name="password"></input>
                         <label>Email</label>
-                        <input type="text"></input>
+                        <input onChange={e =>{
+                            e.preventDefault();
+                            setEmail(e.target.value);
+                        }} type="text" name="email"></input>
                         <label>Phone Number</label>
-                        <input type="text"></input>
+                        <input onChange={e =>{
+                            e.preventDefault();
+                            setPhoneNumber(e.target.value);
+                        }} type="text" name="phone-number"></input>
                         <label>City</label>
-                        <input type="text"></input>
+                        <input onChange={e =>{
+                            e.preventDefault();
+                            setCity(e.target.value);
+                        }} type="text" name="city"></input>
                         <input type="submit" value="Sign Up"></input>
                     </form>
                 </div>
@@ -107,11 +179,17 @@ function Signup(){
 
 
 function Login(){
+
+
+    function handleSubmit(e){
+        e.preventDefault();
+    }
+
     return (
         <div className="container">
             <div className = "row align-items-center">
                 <div className="col-10 mx-auto">
-                    <form action="login" method="POST" id="login-form">
+                    <form onSubmit={handleSubmit} action="login" method="POST" id="login-form">
                         <label>LOG IN</label>
                         <div>
                             <label>ID</label>
@@ -195,29 +273,6 @@ function SearchBar (props) {
     const [searchInput, setSearchInput] =React.useState('');
     console.log(isSubmitting, isError, searchFor, searchBy, searchInput);
 
-    // const handleSearchFor = async event =>{
-    //     event.preventDefault();
-    //     console.log(event.target.value);
-    //     console.log('Search For');
-    //     //updating state of searchFor
-    //     setSearchFor(event.target.value);
-    // }
-
-    // const handleSearchBy = async event =>{
-    //     event.preventDefault();
-    //     console.log(event.target.value);
-    //     console.log('Search By');
-    //     //updating state of searchBy
-    //     setSearchBy(event.target.value);
-    // }
-
-    // const handleSearchInput = async event =>{
-    //     event.preventDefault();
-    //     console.log(event.target.value);
-    //     console.log('Search Input');
-    //     //updating state of searchInput
-    //     setSearchInput(event.target.value);
-    // }
 
     const handleSubmit = async event =>{
         event.preventDefault();

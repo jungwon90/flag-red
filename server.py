@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request, redirect, flash
 from model import db, connect_to_db, User, Twilio, UserProfileAirForecast, AirForecast
 from flask_sqlalchemy import SQLAlchemy
+import crud
 
 import os
 import sys
@@ -127,11 +128,35 @@ def search_result():
         print("Error: %s" % e )
   
 
+@app.route('/valid.json')
+def handle_valid_user():
+    """ Return a JSON response with all user_ids in DB """
+
+    all_users = crud.get_users();
+    all_user_ids = [];
+    
+    for user in all_users:
+        all_user_ids.append(user.user_id);
+
+    return jsonify(all_user_ids)
 
 
 
+@app.route('/signup', methods=['POST'])
+def handle_signup():
+    """ Create a user and store the user in DB """
 
+    input_id = request.form.get('input-id')
+    first_name = request.form.get('first-name')
+    last_name = request.form.get('last-name')
+    password = request.form.get('password')
+    email = request.form.get('email')
+    phone_number = request.form.get('phone-number')
+    city = request.form.get('city')
 
+    crud.create_user(input_id, first_name, last_name, password, email, phone_number, city)
+
+    return jsonify({"success": True})
 
 
 if __name__ == "__main__":
