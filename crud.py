@@ -27,7 +27,7 @@ def get_users():
 def get_user_by_id(user_id):
     """ Return a user by phone number """
 
-    return User.query.filter(User.user_id == user_id).first()
+    return User.query.get(user_id)
 
 
 
@@ -64,6 +64,21 @@ def create_user_profile_airforecast(user, airforecast):
     return user_profile_airforecast
 
 
+def get_user_profile_airforecasts():
+    """ Return all user profile air forecast objects """
+
+    user_profile_airforecasts = UserProfileAirForecast.query.all()
+
+    return user_profile_airforecasts
+
+def get_user_profile_airforecasts_by_user_id(user_id):
+    """ Return all user profile airforecasts by the user id passed in"""
+
+    user_profile_airforecasts = UserProfileAirForecast.query.filter(UserProfileAirForecast.user_id == user_id).all()
+
+    return user_profile_airforecasts
+
+
 
 ######## AirForecast ########
 
@@ -86,7 +101,7 @@ def get_airforecasts():
     return AirForecast.query.all()
 
 
-def get_airforecast_by_city(city):
+def get_airforecast_by_id(air_forecast_id):
     """ Return air forecast by zipcode """
 
-    return AirForecast.query.filter(AirForecast.postal_code == zipcode).all()
+    return AirForecast.query.get(air_forecast_id)

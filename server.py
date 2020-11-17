@@ -31,8 +31,6 @@ def homepage():
     else:
         current_user = session['current_user'] = ''
     
-    if session['current_user'] != '':
-        flash('Logged in!')
 
     return render_template('homepage.html')
 
@@ -166,7 +164,50 @@ def handle_signup():
     city = request.form.get('city')
 
     # Create a user and store into DB
-    crud.create_user(input_id, first_name, last_name, password, email, phone_number, city)
+    user_obj = crud.create_user(input_id, first_name, last_name, password, email, phone_number, city)
+    crud.create_twilio(user_obj)
+
+    # Need to create air quality forecast and store the data in DB for user profile 
+    latitude = 0
+    longitude = 0
+    file = open('data/cities.txt') # load the file
+    for line in file:  # loop over the file to get each line of strings
+        line = line.rstrip() # get a string in each line and store it
+        words = line.split('/')
+        city = words[0]
+        #if the user's city is same as city, extract latitude, longitude for API request
+        if user_obj.city == city:
+            latitude = words[1]
+            longitude = words[2]
+
+    # API request for air forecast data 
+    air_forecast_url = f"https://api.waqi.info/feed/geo:{latitude};{longitude}/?token={API_KEY2}"
+    air_forecast_res = requests.get(air_forecast_url)
+    air_forecast = air_forecast_res.json()
+
+    #Extract the data to create AirForecast object
+    air_forecast_data = air_forecast['data']
+    air_forecast_daily = air_forecast_data['forecast']['daily']
+
+    # create 6 days of air forecast
+    for i in range(6):    
+        pm10 = air_forecast_daily['pm10'][i]['avg'] 
+        pm25 = air_forecast_daily['pm25'][i]['avg']
+        uvi = air_forecast_daily['uvi'][i]['avg']
+        dominentpol = air_forecast_data['dominentpol']
+        aqi = air_forecast_data['aqi']
+        lat = latitude
+        lng = longitude
+        time = air_forecast_data['time']['s']
+        # time = datetime.strptime(air_forecast_data['time']['s'], '%Y-%m-%d %H:%M:%S')
+        city_name = user_obj.city
+        print(pm10, pm25, uvi, dominentpol, aqi, lat, lng, time, city_name)
+                
+        # create AirForecast object(air quality forecast of today ~ todat + 7days)
+        # and store it into DB
+        air_obj = crud.create_airforecast(pm10, pm25, uvi, dominentpol, aqi, lat, lng, time, city_name)
+        # create UserProfileAirForecast and store it into DB
+        crud.create_user_profile_airforecast(user_obj, air_obj)
 
     return jsonify({"success": True})
 
@@ -179,10 +220,10 @@ def handle_login():
     # user inputs from the form
     user_id = request.form.get('id')
     password = request.form.get('password')
-
-    # Get user by id from DB
+    
+    #Get user by id
     user = crud.get_user_by_id(user_id)
-
+    
     # session = {
     # 'current_user': user_id}
 
@@ -200,8 +241,68 @@ def handle_login():
         return jsonify({'message': 'Wrong ID!'})
 
 
+
+@app.route('/logout', methods=['POST'])
+def handle_logout():
+    """ Log the user out """
+
+    # Delete the user from session
+    del session['current_user']
+
+    return jsonify({'message': 'You are logged out!'})
+
+
 @app.route('/profile.json')
 def handle_profile():
+    """ Return a JSON response with user profile data in DB """
+
+    current_user_id = request.args.get('current-user')
+    print('Currnt User ID:') 
+    print(current_user_id)
+
+    user_profile_data = {}
+
+    # Get 6 UserProfileAirForecast objects by the current user's id that's requested
+    user_profile_airforecasts = crud.get_user_profile_airforecasts_by_user_id(current_user_id)
+    # Get all air_forecasts
+    air_forecasts = crud.get_airforecasts();
+
+    # Pull 6 days of air forecast with the air_forecast_ids
+    day = 1
+    for user_profile_airforecast in user_profile_airforecasts:
+        for air_forecast in air_forecasts:
+            if user_profile_airforecast.air_forecast_id == air_forecast.air_forecast_id:
+                user_profile_data[f'{day}'] = {'pm10': air_forecast.pm10, 'pm25': air_forecast.pm25, 'uvi': air_forecast.uvi, 
+                                        'dominentpol': air_forecast.dominentpol, 'aqi': air_forecast.aqi, 'lat': air_forecast.lat,
+                                        'lng': air_forecast.lng, 'time': air_forecast.time, 'city': air_forecast.city}
+                day += 1
+
+    print(user_profile_data)
+    return jsonify(user_profile_data)
+
+
+
+@app.route('/waqikey.json')
+def send_waqi_api_key():
+    """ Return WAQI API KEY """
+
+    return jsonify({'API_KEY2': API_KEY2})
+
+
+@app.route('/sms', methods=['POST'])
+def send_sms_alert():
+    """ Send users a SMS air quality/fire alert """
+
+    # Get all the users from DB
+    users = crud.get_users()
+        
+        for user in users:
+            # Extract phone_number and first_name from each User object
+            
+            # Create alert message for the user
+
+            # send alert_message to users
+
     pass
 
 

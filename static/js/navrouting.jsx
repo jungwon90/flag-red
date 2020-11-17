@@ -4,6 +4,7 @@ const Router = ReactRouterDOM.BrowserRouter;
 const Route = ReactRouterDOM.Route;
 const Switch = ReactRouterDOM.Switch;
 const Link = ReactRouterDOM.Link;
+const Redirect = ReactRouterDOM.Redirect;
 
 let airData;
 let fireData;
@@ -11,8 +12,10 @@ let soilData;
 console.log("nav bar!");
 
 
-
 function App() {
+    const [user, setUser] = React.useState('');
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
 
     return (
         <Router>
@@ -58,12 +61,15 @@ function App() {
                 the first one that matches the current URL */}
                 <Switch>
                     <Route path="/signup"><Signup /></Route>
-                    <Route path="/login"><Login /></Route>
+                    <Route path="/login">
+                        {isLoggedIn ? <Redirect to="/" /> : <Login setUser={setUser} setIsLoggedIn={setIsLoggedIn}/>} 
+                    </Route>
                     <Route path="/about"><About /></Route>
                     <Route path="/contact"><Contact /></Route>
-                    <Route path="/profile"><Profile /></Route>
-                    <Route path="/logout"><Logout /></Route>
-                    <Route path="/"><Home /></Route>
+                    <Route path="/profile"><Profile user={user} isLoggedIn={isLoggedIn}/></Route>
+                    <Route path="/logout">{!isLoggedIn ? <Redirect to="/"/> : <Logout isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>}
+                    </Route>
+                    <Route path="/"><Home isLoggedIn={isLoggedIn}/></Route>
                 </Switch>
             </div> 
             
@@ -190,11 +196,11 @@ function Signup(){
 }
 
 
-function Login(){
+function Login(props){
     const [id, setId] = React.useState('');
     const [password, setPassword] = React.useState('');
 
-    function handleSubmit(e){
+    const handleSubmit = async e =>{
         e.preventDefault();
         
         const formInputs = {
@@ -204,6 +210,10 @@ function Login(){
         //post request to server
         $.post('/login', formInputs, (res) =>{
             alert(res['message']);
+            if(res['message'] === 'Logged in!'){
+                props.setIsLoggedIn(true);
+                props.setUser(id);
+            }
         });
     }
 
@@ -235,15 +245,21 @@ function Login(){
     );
 }
 
-function Home(){
+
+function Home(props){
     const [markerData, setMarkerData] = React.useState();
     const [dataType, setDataType] = React.useState('');
 
+    let loginMessage = '';
+    if(props.isLoggedIn){
+        loginMessage = "You're logged in!";
+    }
+
     return (
-        <React.Fragment> 
+        <React.Fragment>
+            <label>{loginMessage}</label> 
             <label>Fleg Red</label>
-            <SearchBar setMarkerData={setMarkerData} setDataType={setDataType} dataType={dataType}/>
-            <h3>Map</h3>
+            <SearchBar setMarkerData={setMarkerData} setDataType={setDataType}/>
             <MapContainer markerData={markerData} dataType={dataType}/>
             <div>Air quality Forecast</div>
         </React.Fragment>
@@ -269,44 +285,65 @@ function Contact(){
 }
 
 
-function Profile(){
+function Profile(props){
 
-    //get request to server to get user profile data from DB
-    $.get('/profile.json', (res)=>{
+    const currentUser = props.user;   
+    let tempStr = '';
 
-    });                       
+    if(currentUser !== ''){
+        //if there's user, get request to server to get user profile data from DB
+       $.get('/profile.json', {'current-user': currentUser}, (res)=>{
+            console.log(res);
+            const airforecast = res;
+            const day1 = airforecast['1'];
+            console.log(day1);
+            
+            const aqi = day1['aqi'];
+            console.log(aqi);
+         
+        });
+        
+    } 
 
     return (
-        <div>
+        <section>
             <h3>Profile</h3>
-            <p>Welcome!</p>
+            <p>Welcome!{currentUser}</p>
+            <p>{tempStr}</p>
             <div id="airqual-around-user">air quality graph</div>
             <div id="air-forecast-around-user">air forecast</div>
             <form>
                 <label>fire/air alert request form</label>
             </form>
-        </div>
+        </section>
     );
 }
 
-function Logout(){
+
+function Logout(props){
+    //update state of isLoggedIn if isLoggedIn is true
+    if(props.isLoggedIn){
+        $.post('/logout', (res)=>{
+            props.setIsLoggedIn(false);
+            alert(res['message']);
+        });
+    }
+
     return (
-        <div>Logout</div>
+        <div></div>
     );
 }
 
 
-//-- Search bar --//
+//--------- Search bar ---------//
 
 
 function SearchBar (props) {
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [isError, setIsError] = React.useState(false);
     const [searchFor, setSearchFor]= React.useState('air-quality');
     const [searchBy, setSearchBy] = React.useState('by-city');
     const [searchInput, setSearchInput] =React.useState('');
-    console.log(isSubmitting, isError, searchFor, searchBy, searchInput);
-
+    
 
     const handleSubmit = async event =>{
         event.preventDefault();
@@ -316,13 +353,12 @@ function SearchBar (props) {
             'cur-search-by': searchBy,
             'cur-search-input': searchInput
         };
-        setIsSubmitting(true); //updating state of isSubmitting
         
         alert('onSubmit event handler is working');
-        console.log(isSubmitting, isError, searchFor, searchBy, searchInput);
+        console.log(isError, searchFor, searchBy, searchInput);
         //updating state of props.dataType(set to searchFor)
         props.setDataType(searchFor);
-        console.log(props.dataType);
+
         //get ruquest to /search in the server
         $.get('/search', formInputs, (response)=>{
              //if search-for =='air-quality'
@@ -400,7 +436,7 @@ function SearchBar (props) {
 }
 
 
-//----- Map -----//
+//------------ Map ------------//
 
 
 function MapComponent(props) {
@@ -444,13 +480,6 @@ function MapComponent(props) {
     )
 }
 
-// function NoFire(props){
-//     return (
-//         <div>
-//             <p>{props.message}</p>
-//         </div>
-//     )
-// }
   
 function MapContainer(props) {
     //map and map options
@@ -466,12 +495,14 @@ function MapContainer(props) {
         map: map
     }]);
     const [markers, setMarkers] = React.useState([]);
-    const [hasData, setHasData] = React.useState(true);
+
 
     const mapDimensions = {
       width: '100%',
       height: '70vh'
     }
+
+    let noDataFound = '';
 
     //if there's a map 
     if (map){
@@ -498,10 +529,50 @@ function MapContainer(props) {
                 const pm25 = airQualData['PM25'];
                 const city = airQualData['division'];
                 const aqiInfo = airQualData['aqiInfo'];
-    
-                console.log(latitude, longitude, aqi, co, no2, ozone, pm25, city, aqiInfo)
-                //create air-quality markers..
+                console.log(latitude, longitude, aqi, co, no2, ozone, pm25, city, aqiInfo);
+
+                const airInfo = new google.maps.InfoWindow();
+
+                const airInfoContent = (`
+                    <div class="window-content">
+                        <ul class="air-info">
+                        <li><b>City: </b>${city}</li>
+                        <li><b>Air Quality Index: </b>${aqi}</li>
+                        <li><b>Ultrafine Dust Level: </b>${pm25}</li>
+                        <li><b>Carbon Monoxide: </b>${co}</li>
+                        <li><b>Nitrogen Dioxide: </b>${no2}</li>
+                        <li><b>Ozone: </b>${ozone}</li>
+                        <li><b>AQI Info: </b>${aqiInfo}</li>
+                        </ul>
+                    </div>
+                `);
+
+                const airMarker = new window.google.maps.Marker({
+                    position: {lat: latitude, lng: longitude},
+                    title:'Air Quality Info',
+                    map: map});
+                    
+                airMarker.addListener('click', ()=>{
+                    airInfo.close();
+                    airInfo.setContent(airInfoContent);
+                    airInfo.open(map, airMarker);
+                });
+
+                // Get API key from the server
+                let API_KEY2;
+                $.get('/waqikey.json', (res) => {
+                    API_KEY2 = res['API_KEY2'];
+                });
                 
+                //create air quality index markers near by the location
+                let airQualMapOverlay = new google.maps.ImageMapType({
+                    getTileUrl: function(coord, zoom){
+                        return `https://tiles.aqicn.org/tiles/usepa-aqi/${zoom}/${coord.x}/${coord.y}.png?token=${API_KEY2}`;
+                    },
+                    name: "Air Quality"
+                });
+                
+                map.overlayMapTypes.insertAt(0, airQualMapOverlay);
     
             } else if(props.dataType == 'fire'){
                 console.log(props.dataType)
@@ -509,34 +580,90 @@ function MapContainer(props) {
                 const fireData = props.markerData;
                 const fires = fireData['data'] ;
                 console.log(fireData);
-                console.log(fire);
+                console.log(fires);
     
                 for(const eachFire of fires){
                     latitude = eachFire['lat'];
                     longitude = eachFire['lon'];
-                    const confidence = eachFire['confidence'];
-                    const daynight = eachFire['daynight'];
-                    const detectionTime = eachFire['detection_time'];
-                    const frp = eachFire['frp'];
-                    const distance = eachFire['distance'] * 0.62137; //convert km to miles
+                    let confidence = eachFire['confidence'];
+                    let daynight = eachFire['daynight'];
+                    let detectionTime = eachFire['detection_time'];
+                    let frp = eachFire['frp'];
+                    let distance = eachFire['distance'] * 0.62137; //convert km to miles
                     
                     console.log(latitude, longitude, confidence, daynight, detectionTime, frp, distance);
+                    
+                    //create markers and info windows
+                    const fireInfo = new google.maps.InfoWindow();
+
+                    const fireInfoContent = (`
+                        <div class="window-content">
+                            <ul class="fire-info">
+                            <li><b>Fire confidence: </b>${confidence}</li>
+                            <li><b>Fire radiative power: </b>${frp} MW</li>
+                            <li><b>Day/Night: </b>${daynight}</li>
+                            <li><b>Detection time: </b>${detectionTime}</li>
+                            <li><b>Distance: </b>${distance}</li>
+                            </ul>
+                        </div>
+                        `);
+
+                    const fireMarker = new window.google.maps.Marker({
+                        position: {lat: latitude, lng: longitude},
+                        title:'Fire Detection',
+                        map: map});
+                    
+                    fireMarker.addListener('click', ()=>{
+                        fireInfo.close();
+                        fireInfo.setContent(fireInfoContent);
+                        fireInfo.open(map, fireMarker);
+                    });
                 }
-    
-                if(!props.dataType['data']){
-                    setHasData(false);
+
+                if(fireData.length === 0){
+                    noDataFound = "No Fire Data Found";
                 }
+
             } else {
                 console.log(props.dataType)
+                const city = props.markerData['airforecast']['city'];
+                const coordinate = city['geo']; //an array of lat, lng
+                const soilData = props.markerData['data'];
+
                 //Extract coordinate and data for display from props.markerData
-    
+                latitude = coordinate[0];
+                longitude = coordinate[1];
+
+                for(const soil of soilData){
+                    let soilMoisture = soil['soil_moisture'];
+                    let soilTemperature = soil['soil_temperature'];
+
+                    //create markers and info windows
+                    const soilInfo = new google.maps.InfoWindow();
+
+                    const soilInfoContent = (`
+                        <div class="window-content">
+                            <ul class="soil-info">
+                            <li><b>Soil Moisture: </b>${soilMoisture}</li>
+                            <li><b>Soil Temperature: </b>${soilTemperature} MW</li>
+                            </ul>
+                        </div>
+                        `);
+                    
+                    const soilMarker = new window.google.maps.Marker({
+                        position: {lat: latitude, lng: longitude},
+                        title:'Soil Condition',
+                        map: map});
+                    
+                    soilMarker.addListener('click', ()=>{
+                        soilInfo.close();
+                        soilInfo.setContent(soilInfoContent);
+                        soilInfo.open(map, soilMarker);
+                    });
+                }
             }
         }
         
-        //create markers
-        const sfMarker = new window.google.maps.Marker({position: {lat: 37.77397, lng: -122.431297},
-            title:'Fire Detection',
-            map: map});
     }
     
     //useCallback -> optimize the rendering behavior of React components.
@@ -554,6 +681,7 @@ function MapContainer(props) {
     return (
       <div id="map-container" className="container">
         {/* <LocationSetter setSearchBox={setSearchBox} searchBox={searchBox} setOptions={setOptions} options={options}/> */}
+        {noDataFound}
         {MainMap}
       </div> 
     )
