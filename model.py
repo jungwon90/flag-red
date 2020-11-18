@@ -15,6 +15,7 @@ class User(db.Model):
     email = db.Column(db.String, nullable=False)
     phone_num = db.Column(db.String, unique=True, nullable=False)
     city = db.Column(db.String, nullable=False)
+    sms_service = db.Column(db.Boolean)
 
     twilio = db.relationship('Twilio')
 
@@ -30,6 +31,7 @@ class Twilio(db.Model):
 
     twilio_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.String(10), db.ForeignKey("users.user_id"))
+    date = db.Column(db.String)
 
     user = db.relationship('User')
 

@@ -15,6 +15,7 @@ console.log("nav bar!");
 function App() {
     const [user, setUser] = React.useState('');
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [signedup, setSignedup] = React.useState(false);
 
 
     return (
@@ -60,14 +61,19 @@ function App() {
                 {/* <Switch> looks through its children <Route>s and renders 
                 the first one that matches the current URL */}
                 <Switch>
-                    <Route path="/signup"><Signup /></Route>
+                    <Route path="/signup">
+                        {signedup ? <Redirect to="/" /> : <Signup setSignedup={setSignedup} />}
+                    </Route>
                     <Route path="/login">
                         {isLoggedIn ? <Redirect to="/" /> : <Login setUser={setUser} setIsLoggedIn={setIsLoggedIn}/>} 
                     </Route>
                     <Route path="/about"><About /></Route>
                     <Route path="/contact"><Contact /></Route>
-                    <Route path="/profile"><Profile user={user} isLoggedIn={isLoggedIn}/></Route>
-                    <Route path="/logout">{!isLoggedIn ? <Redirect to="/"/> : <Logout isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>}
+                    <Route path="/profile">
+                        {!isLoggedIn ?  <Redirect to="/" /> : <Profile user={user} />}
+                    </Route>
+                    <Route path="/logout">
+                        {!isLoggedIn ? <Redirect to="/"/> : <Logout isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>}
                     </Route>
                     <Route path="/"><Home isLoggedIn={isLoggedIn}/></Route>
                 </Switch>
@@ -79,7 +85,7 @@ function App() {
 
 
 
-function Signup(){
+function Signup(props){
     const [idInput, setIdInput] = React.useState('');
     const [firstName, setFirstName] = React.useState('');
     const [lastName, setLastName] = React.useState('');
@@ -128,6 +134,7 @@ function Signup(){
             console.log(res);
             if(res['success']){
                 alert('Account created! Please log in!');
+                props.setSignedup(true);
             }
         });
     }
@@ -285,36 +292,58 @@ function Contact(){
 }
 
 
+
+
+function ToggleSwitch(props){
+    return(
+        <label className="switch">
+            <input checked={props.checked} onChange={(e) => {
+                e.preventDefault(); 
+                props.onChange(e.target.checked)}} type="checkbox"></input>
+            <span className="slider round"></span>
+        </label>
+    );
+}
+
 function Profile(props){
-
-    const currentUser = props.user;   
-    let tempStr = '';
-
-    if(currentUser !== ''){
-        //if there's user, get request to server to get user profile data from DB
-       $.get('/profile.json', {'current-user': currentUser}, (res)=>{
-            console.log(res);
-            const airforecast = res;
-            const day1 = airforecast['1'];
-            console.log(day1);
+    const [alertOn, setAlertOn] = React.useState(false);
+    console.log(alertRequest);
+    const currentUser = props.user;
+    
+    //if there's user, get request to server to get user profile data from DB
+    $.get('/profile.json', {'current-user': currentUser}, (res)=>{
+        console.log(res);
+        const airforecast = res;
+        const day1 = airforecast['1'];
+        console.log(day1);
             
-            const aqi = day1['aqi'];
-            console.log(aqi);
+        const aqi = day1['aqi'];
+        console.log(aqi);
          
-        });
+    });
+
+    const alertRequest = (checked) =>{
+        setAlertOn(checked);
         
-    } 
+        if(checked){
+            $.post('/alertrequest', (res)=>{
+                console.log(res);
+            });
+        } else {
+            $.post('/alertcancel', (res) =>{
+                console.log(res);
+            });
+        }
+    };
 
     return (
         <section>
             <h3>Profile</h3>
             <p>Welcome!{currentUser}</p>
-            <p>{tempStr}</p>
             <div id="airqual-around-user">air quality graph</div>
             <div id="air-forecast-around-user">air forecast</div>
-            <form>
-                <label>fire/air alert request form</label>
-            </form>
+            <label>Air Quality Alert</label>
+            <ToggleSwitch checked={alertOn} onChange={alertRequest}/>
         </section>
     );
 }
@@ -645,7 +674,7 @@ function MapContainer(props) {
                         <div class="window-content">
                             <ul class="soil-info">
                             <li><b>Soil Moisture: </b>${soilMoisture}</li>
-                            <li><b>Soil Temperature: </b>${soilTemperature} MW</li>
+                            <li><b>Soil Temperature: </b>${soilTemperature}</li>
                             </ul>
                         </div>
                         `);

@@ -1,6 +1,8 @@
 from flask import Flask, render_template, jsonify, request, redirect, session, flash
 from model import db, connect_to_db, User, Twilio, UserProfileAirForecast, AirForecast
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+from twilio.rest import Client
 import crud
 
 import os
@@ -164,8 +166,23 @@ def handle_signup():
     city = request.form.get('city')
 
     # Create a user and store into DB
-    user_obj = crud.create_user(input_id, first_name, last_name, password, email, phone_number, city)
-    crud.create_twilio(user_obj)
+    user_obj = crud.create_user(input_id, first_name, last_name, password, email, phone_number, city)                                                                                                                                                                                                                             
+
+
+    return jsonify({"success": True})
+
+
+
+@app.route('/login', methods=['POST'])
+def handle_login():
+    """ Log user into app """
+
+    # user inputs from the form
+    user_id = request.form.get('id')
+    password = request.form.get('password')
+    
+    #Get user by id
+    user_obj = crud.get_user_by_id(user_id)
 
     # Need to create air quality forecast and store the data in DB for user profile 
     latitude = 0
@@ -193,7 +210,6 @@ def handle_signup():
     for i in range(6):    
         pm10 = air_forecast_daily['pm10'][i]['avg'] 
         pm25 = air_forecast_daily['pm25'][i]['avg']
-        uvi = air_forecast_daily['uvi'][i]['avg']
         dominentpol = air_forecast_data['dominentpol']
         aqi = air_forecast_data['aqi']
         lat = latitude
@@ -201,37 +217,28 @@ def handle_signup():
         time = air_forecast_data['time']['s']
         # time = datetime.strptime(air_forecast_data['time']['s'], '%Y-%m-%d %H:%M:%S')
         city_name = user_obj.city
+        #sometime, uvi has not enough length of forecast days
+        last_uvi_index = len(air_forecast_daily['uvi']) - 1
+        if i > last_uvi_index:
+            uvi = air_forecast_daily['uvi'][last_uvi_index]['avg']
+        else:
+            uvi = air_forecast_daily['uvi'][i]['avg'] 
         print(pm10, pm25, uvi, dominentpol, aqi, lat, lng, time, city_name)
                 
-        # create AirForecast object(air quality forecast of today ~ todat + 7days)
+        # create AirForecast object(air quality forecast of today ~ todat + 5days)
         # and store it into DB
         air_obj = crud.create_airforecast(pm10, pm25, uvi, dominentpol, aqi, lat, lng, time, city_name)
         # create UserProfileAirForecast and store it into DB
         crud.create_user_profile_airforecast(user_obj, air_obj)
-
-    return jsonify({"success": True})
-
-
-
-@app.route('/login', methods=['POST'])
-def handle_login():
-    """ Log user into app """
-
-    # user inputs from the form
-    user_id = request.form.get('id')
-    password = request.form.get('password')
-    
-    #Get user by id
-    user = crud.get_user_by_id(user_id)
     
     # session = {
     # 'current_user': user_id}
 
     # if there's user, that means the user_id exists in DB
-    if user:
-        if user.password == password:
+    if user_obj:
+        if user_obj.password == password:
             # Create session and store user_id
-            session['current_user'] = user.user_id
+            session['current_user'] = user_obj.user_id
 
             return jsonify({'message': 'Logged in!'})
         else:
@@ -289,23 +296,104 @@ def send_waqi_api_key():
     return jsonify({'API_KEY2': API_KEY2})
 
 
-@app.route('/sms', methods=['POST'])
+############## SMS Service ###############
+
+@app.route('/alertrequest', methods=['POST'])
 def send_sms_alert():
     """ Send users a SMS air quality/fire alert """
 
-    # Get all the users from DB
-    users = crud.get_users()
-        
-        for user in users:
-            # Extract phone_number and first_name from each User object
+    # Get current user by id
+    cur_user_id = session['current_user']
+    user_obj = crud.get_user_by_id(cur_user_id)
+
+    # Set SMS service for that user
+    crud.set_sms_service(cur_user_id, True)
+      
+    # Add the user to twilio table
+    today_obj = datetime.now()
+    today = f"{today_obj.year}/{today_obj.month}/{today_obj.day}"
+    crud.create_twilio(user_obj, today)
+
+    # Extract phone_number and first_name from each User object
+    phone_number = os.environ['PHONE_NUMBER']
+    twilio_phone = os.environ['TWILIO_PHONE_NUMBER']
+    twilio_account_sid = os.environ['TWILIO_ACCOUNT_SID']
+    twilio_key = os.environ['TWILIO_KEY']  
+    user_fname = user_obj.fname
+
+    # Get 6 UserProfileAirForecast objects by the current user id
+    user_airforecasts = crud.get_user_profile_airforecasts_by_user_id(cur_user_id)
+    # Get all air_forecasts
+    airforecasts = crud.get_airforecasts();
+    # Pull 6 days of air forecast with the air_forecast_ids
+    user_sms_data = {}
+    day = 1
+    for user_airforecast in user_airforecasts:
+        for airforecast in airforecasts:
+            if user_airforecast.air_forecast_id == airforecast.air_forecast_id:
+                user_sms_data[f'{day}'] = {'pm10': airforecast.pm10, 'pm25': airforecast.pm25, 'uvi': airforecast.uvi, 
+                                        'dominentpol': airforecast.dominentpol, 'aqi': airforecast.aqi, 'city': airforecast.city}
+                day += 1
+                
+    # get air quality based on aqi level
+    today_air_forecast = user_sms_data['1']
+    if today_air_forecast['aqi'] <= 50:
+        air_quality = "good"
+    elif today_air_forecast['aqi'] > 50 and today_air_forecast['aqi'] <= 100:
+        air_quality = "moderate"
+    elif today_air_forecast['aqi'] > 100 and today_air_forecast['aqi'] <= 150:
+        air_quality = "unhealthy for sensitive groups"
+    elif today_air_forecast['aqi'] > 150 and today_air_forecast['aqi'] <= 200:
+        air_quality = "unhealthy"
+    elif today_air_forecast['aqi'] > 200 and today_air_forecast['aqi'] <= 300:
+        air_quality = "very unhealthy"
+    elif today_air_forecast['aqi'] > 300:
+        air_quality = "hazardous"
+
+    # get uv quality based on uvi level
+    if today_air_forecast['uvi'] <= 2:
+        uv_level = "low"
+    elif today_air_forecast['uvi'] > 2 and today_air_forecast['uvi'] <= 5:
+        uv_level = "moderate"
+    elif today_air_forecast['uvi'] > 5 and today_air_forecast['uvi'] <= 7:
+        uv_level = "high"
+    elif today_air_forecast['uvi'] > 7 and today_air_forecast['uvi'] <= 10:
+        uv_level = "very high"
+    elif today_air_forecast['uvi'] > 10:
+        uv_level = "extreme"
+    
+    # Create alert message for the user
+    message = f"Hello, {user_fname}! Today's air quality around {today_air_forecast['city']} is {air_quality}. Dominent pollution is {today_air_forecast['dominentpol']} and UV level is {uv_level}."
+
+    # send alert_message to users
+    client = Client(twilio_account_sid, twilio_key)
+
+    sms = client.messages.create(
+        to = phone_number,
+        from_ = twilio_phone,
+        body = message
+    )
             
-            # Create alert message for the user
+    return jsonify({'message': 'Alert On'})
+  
 
-            # send alert_message to users
 
-    pass
+@app.route('/alertcancel', methods=['POST'])
+def cancel_sms_alert():
+    """ Cancel SMS alert service """
+    
+    # Get current user by id
+    cur_user_id = session['current_user']
+   
+    # Set SMS service to FalseFa
+    crud.set_sms_service(cur_user_id, False)
+
+    return jsonify({'message': 'Alert Off'})
+
+
 
 
 if __name__ == "__main__":
     connect_to_db(app)
+
     app.run(debug=True, host='0.0.0.0')

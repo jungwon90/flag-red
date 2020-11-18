@@ -1,16 +1,16 @@
 """CRUD operations."""
-from flask_sqlalchemy import SQLAlchemy 
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from model import db, User, Twilio, UserProfileAirForecast, AirForecast, connect_to_db
 
 
 ######## User #########
 
-def create_user(user_id, fname, lname, password, email, phone_num, city):
+def create_user(user_id, fname, lname, password, email, phone_num, city, sms_service=False):
     """ Create and return a new user """
 
     user = User(user_id = user_id, fname = fname, lname = lname, password = password, 
-                email = email, phone_num = phone_num, city = city)
+                email = email, phone_num = phone_num, city = city, sms_service = sms_service)
 
     db.session.add(user)
     db.session.commit()
@@ -30,13 +30,21 @@ def get_user_by_id(user_id):
     return User.query.get(user_id)
 
 
+def set_sms_service(user_id, bool):
+    """ Set SMS service state and Return it """
+
+    user = User.query.get(user_id)
+    user.sms_service = bool
+    db.session.commit()
+    
+
 
 ######## Twilio ########
 
-def create_twilio(user_obj):
+def create_twilio(user_obj, date):
     """ Create and return a new twilio """
 
-    twilio = Twilio(user = user_obj)
+    twilio = Twilio(user = user_obj, date = date)
 
     db.session.add(twilio)
     db.session.commit()

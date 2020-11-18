@@ -31,7 +31,7 @@ Python, Javascript, HTML5, CSS3, Flask, React, Bootstrap
 
 ### Data
 
-Ambee fire API, air quality API, Google Maps API.
+Ambee fire/air quality API, WAQI API, Google Maps API.
 
 
 
