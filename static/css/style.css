@@ -18,10 +18,191 @@ body {
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
     height: 100%;
-    margin: 0;
-    padding: 0;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+
 }
 
+/*-------------- Contact Page -------------*/
+.contact-container{
+    height: 1100px;
+    width: 100%;
+}
+.contact-heading{
+    margin-bottom: 50px;
+}
+/*-------------- User Profile -------------*/
+.greeting-section{
+    text-align: center;
+}
+
+.user-info-section{
+    text-align: center;
+}
+.user-info-container{
+    display: inline-block;
+    width: 40%;
+    height: 200px;
+    border: 1px solid #d0d0d0;
+    text-align: center;
+    margin-left: 5%;
+    margin-top: 100px;
+    border-radius: 0.7em;
+    box-shadow: 2px 2px 2px #747272;
+    vertical-align: middle;
+}
+.middle-section{
+    text-align: center;
+}
+.user-uvi-container{
+    display: inline-block;
+    width: 40%;
+    height: 500px;
+    border: 1px solid #d0d0d0;
+    text-align: center;
+    margin-top: 100px;
+    border-radius: 0.7em;
+    box-shadow: 2px 2px 2px #747272;
+    vertical-align: middle;
+}
+
+.user-aqi-container{
+    display: inline-block;
+    width: 40%;
+    height: 500px;
+    border: 1px solid #d0d0d0;
+    text-align: center;
+    margin-top: 100px;
+    border-radius: 0.7em;
+    box-shadow: 2px 2px 2px #747272;
+    vertical-align: middle;
+}
+.user-air-forecast-container{
+    width: 80%;
+    height: 70%;
+    border: 1px solid #d0d0d0;
+    margin-left: 10%;
+    margin-top: 100px;
+    border-radius: 0.7em;
+    box-shadow: 2px 2px 2px #747272;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+/*--------------  AQI chart -------------*/
+.air-qual-idx-img-container{
+    text-align: center;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.air-qual-index-img{
+    width: 60%;
+    height: auto;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/*--------------  UVI widget--------------*/
+.uvi-container{
+    display: inline-block;
+    width: 40%;
+    height: 500px;
+    border: 1px solid #d0d0d0;
+    text-align: center;
+    margin-left: 5%;
+    margin-top: 180px;
+    border-radius: 0.7em;
+    box-shadow: 2px 2px 2px #747272;
+    vertical-align: middle;
+    
+}
+
+.uv-img{
+    width: 50%;
+    height: auto;
+}
+
+/*--------------  AQI widget--------------*/
+.aqi-container{
+    display: inline-block;
+    width: 40%;
+    height: 500px;
+    border: 1px solid #d0d0d0;
+    text-align: center;
+    margin-left: 10%;
+    margin-top: 180px;
+    border-radius: 0.7em;
+    box-shadow: 2px 2px 2px #747272;
+    vertical-align: middle;
+}
+
+.aqi-img{
+    width: 50%;
+    height: auto;
+}
+
+/*--------------  Air Forecast widget--------------*/
+.air-forecast-section{
+    height: 1100px;
+    width: 100%;
+}
+
+.air-forecast-container{
+    width: 80%;
+    height: 60%;
+    border: 1px solid #d0d0d0;
+    margin-left: 10%;
+    margin-top: 180px;
+    border-radius: 0.7em;
+    box-shadow: 2px 2px 2px #747272;
+    vertical-align: middle;
+    display: inline-block;
+}
+.air-forecast-h{
+    font-size: 21px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.date-container{
+    text-align: center;
+}
+
+.air-forecast-daily{
+    width: 29%;
+    margin-left: 4%;
+    margin-bottom: 5%;
+    display: inline-block;
+    font-size: 9px;
+}
+.air-forecast-date{
+    padding-right: 7%;
+    font-size: 17px;
+}
+.air-forecast-img{
+    width: 15%;
+    height: auto;
+}
+
+.air-forecast-label{
+    font-weight: 400;
+    display: inline-block;
+    width: 150px;
+    vertical-align: middle;
+}
+
+.air-type{
+    margin-right: 10px;
+}
+
+.air-level{
+    font-weight: 400;
+    display: inline-block;
+    width: 150px;
+    vertical-align: middle;
+}
 /*-------------- Map --------------*/
 /* Always set the map height explicitly to define the size of the div
         * element that contains the map. */

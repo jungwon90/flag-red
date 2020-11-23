@@ -91,10 +91,10 @@ def get_user_profile_airforecasts_by_user_id(user_id):
 ######## AirForecast ########
 
 
-def create_airforecast(pm10, pm25, uvi, dominentpol, aqi, lat, lng, time, city):
+def create_airforecast(pm10, pm25, o3, uvi, dominentpol, aqi, lat, lng, time, city):
     """ Create and return a new air forecast """
 
-    air_forecast = AirForecast(pm10=pm10, pm25=pm25, uvi=uvi, dominentpol=dominentpol,
+    air_forecast = AirForecast(pm10=pm10, pm25=pm25, o3 = o3, uvi=uvi, dominentpol=dominentpol,
                             aqi=aqi, lat=lat, lng=lng, time=time, city=city)
 
     db.session.add(air_forecast)

@@ -256,6 +256,7 @@ function Login(props){
 function Home(props){
     const [markerData, setMarkerData] = React.useState();
     const [dataType, setDataType] = React.useState('');
+    const [city, setCity] = React.useState('');
 
     let loginMessage = '';
     if(props.isLoggedIn){
@@ -266,17 +267,45 @@ function Home(props){
         <React.Fragment>
             <label>{loginMessage}</label> 
             <label>Fleg Red</label>
-            <SearchBar setMarkerData={setMarkerData} setDataType={setDataType}/>
+            <SearchBar setMarkerData={setMarkerData} setDataType={setDataType} setCity={setCity}/>
             <MapContainer markerData={markerData} dataType={dataType}/>
-            <div>Air quality Forecast</div>
+            <div className="air-qual-idx-img-container">
+                <label>AIR QUALITY INDEX</label>
+                <img className="air-qual-index-img" src="/static/img/aqi.png" alt="Air Quality Index"></img>
+            </div>
+            <div className="container">
+                <UVIWidget markerData={markerData}/>
+                <AQIWidget markerData={markerData} />
+            </div>
+            <AirQualityForecast markerData={markerData} city={city}/>
         </React.Fragment>
     );
 }
 
 function About(){
     return (
-    
-        <div>About</div>
+        <div>
+            <h3>We want to be your safeguard from air pollution.</h3>
+            <p>
+                Polluted air affects well-being with disruption to our ecosystem and various health risks.
+                Flag Red helps identify pollution-dense in your location and monitor air pollution.
+                <br></br>
+                Poor air quality levels can aggravate respiratory ailments, wheezing, lowers immunity,
+                fatigue and much more. Air Pollution is also an indicator of global warming and climate change.
+            </p>
+            <h3>Protect yourself from wildfires today.</h3>
+            <p>
+                Active fires not only disrupts an ecosystem with severe injuries, loos of life, and damage to
+                property. Fires also affects life in various forms with toxic amounts of lingering pollution in the air.
+                This is harmful to Human and Earth.
+            </p>
+            <h3>Make better decisionss with the real-time soil data</h3>
+            <p>
+                Farmers and horticulturalists rely on soil condition and weather to estimate crop growth through
+                guesswork and experience with possible errors. Soil moisture and temperature dictate the type of biome
+                present and the land suitability for growing crops.
+            </p>
+        </div>
     );
 }
 
@@ -284,9 +313,9 @@ function About(){
 
 function Contact(){
     return (
-        <div>
-            <h3>Membership Issue / Technical Support</h3>
-            <p>Contact info : koag132@gmail.com</p>
+        <div className="contact-container">
+            <h3 className="contact-heading">Membership Issue / Technical Support</h3>
+            <p>Contact Info : koag132@gmail.com</p>
         </div>
     );
 }
@@ -305,22 +334,349 @@ function ToggleSwitch(props){
     );
 }
 
+function ProfileUVIWidget(props){
+    const uvi = props.uvi; //pull out today's uvi level
+    let uvLevel = '';
+    let uvimg = '/static/img/uvnone.png';
+    let explainUVI = '';
+    
+    //find out uv level based on the uvi
+    if(uvi <= 2){
+        uvLevel = 'LOW';
+        uvimg = '/static/img/uvilow.png';
+        explainUVI = `Wear sunglasses on bright days. 
+                If you burn easily, cover up and use broad spectrum SPF 30+ sunscreen.
+                Bright surfaces, sand, water, and snow will increase UV exposure.`;
+    } else if(uvi > 2 && uvi <= 5){
+        uvLevel = 'MODERATE';
+        uvimg = '/static/img/uvimoderate.png';
+        explainUVI = `Stay in shade near midday when the SUN is strongest.
+                    If outdoors, wear sun-protective clothing, a wide-brimmed hat, and UV-blocking sunglasses
+                    Generously apply broad spectrum SPF 30+ sunscreen every 1.5 hours, even on cloudy days.
+                    Bright surfaces, sand, water, and snow will increase UV exposure.`;
+    } else if(uvi > 5 && uvi <= 7){
+        uvLevel = 'HIGH';
+        uvimg = '/static/img/uvihigh.png';
+        explainUVI = `Reduce time in the sun between 10AM and 4PM. If outdoors, seek shade and wear sun-protective clothing,
+                    a wide-brimmed hat, and UV-blocking sunglasses. Generously apply broad spectrum SPF 30+ sunscreen
+                    every 1.5 hours, even on cloudy days. Bright surfaces, sand, water, and snow will increase UV exposure.`;
+    } else if(uvi > 7 && uvi <= 10){
+        uvLevel = 'VERY HIGH';
+        uvimg = '/static/img/uviveryhigh.png';
+        explainUVI = `Minimize sun exposure between 10AM. and 4PM. If outdoors, seek shade and wear sun-protective clothing, 
+                    a wide-brimmed hat, and UV-blocking sunglasses. Generously apply broad spectrum SPF 30+ sunscreen every 1.5 hours, 
+                    even on cloudy days. Bright surfaces, such as sand, water, and snow, will increase UV exposure.`;
+    } else if(uvi > 10){
+        uvLevel = 'EXTREME';
+        uvimg = '/static/img/uviextreme.png';
+        explainUVI = `Try to avoid sun exposure between 10 a.m. and 4 p.m. If outdoors, seek shade and wear sun-protective clothing, 
+                    a wide-brimmed hat, and UV-blocking sunglasses. Generously apply broad spectrum SPF 30+ sunscreen every 1.5 hours, 
+                    even on cloudy days. Bright surfaces, such as sand, water, and snow, will increase UV exposure.`;
+    }
+
+    return (
+        <div className="user-uvi-container">
+            <div>
+            <label>UV INDEX</label>
+            </div>
+            <div>
+                <label>CURRENT UV LEVEL</label>
+                <p>{uvLevel}</p>
+            </div>
+            <div>
+                <img className="uv-img" src={uvimg} alt="UVI IMG"></img>
+            </div>
+            <div>
+                <label>CURRENT UVI</label>
+                <p>{uvi}</p>
+            </div>
+            <p>{explainUVI}</p>
+        </div>
+    );
+}
+
+function ProfileAQIWidget(props){
+    const aqi = props.aqi
+    let aqiImg = '';
+    let aqiLevel = '';
+    let explainAQI = '';
+
+    if(aqi <= 50){
+        aqiImg = '/static/img/aqigood.png';
+        aqiLevel = 'GOOD';
+        explainAQI = 'Air pollution poses little or no risk.';
+    } else if(aqi > 50 && aqi <= 100){
+        aqiImg = '/static/img/aqimoderate.png';
+        aqiLevel = 'MODERATE';
+        explainAQI = 'Health concern for people who are unusually sensitive to air pollution';
+    } else if(aqi > 100 && aqi <= 150){
+        aqiImg = '/static/img/aqiunhealthyfors.png';
+        aqiLevel = 'UNHEALTHY FOR SENSITIVE GROUPS';
+        explainAQI = 'Sensitve groups, young children and the elderly, may experience health effects';
+    } else if(aqi > 150 && aqi <= 200){
+        aqiImg = '/static/img/aqiunhealthy.png';
+        aqiLevel = 'UNHEALTHY';
+        explainAQI = 'Everyone may experience health effects; sensitive groups may experience more serious health effects.';
+    } else if(aqi > 200 && aqi <= 300){
+        aqiImg = '/static/img/aqiveryunhealthy.png';
+        aqiLevel = 'VERY UNHEALTHY';
+        explainAQI = 'Health alert: everyone may experience more serious health effects.';
+    } else {
+        aqiImg = '/static/img/aqihazardous.png';
+        aqiLevel = 'HAZARDOUS';
+        explainAQI = 'Health warnings of emergency conditions. The entire population is more likely to be affected.';
+    }
+
+    return(
+        <div className='user-aqi-container'>
+            <div>
+                <label>AIR QUALITY INDEX</label>
+            </div>
+            <div>
+                <img className="aqi-img" src={aqiImg} alt="AQI IMG"></img>
+                <h3>TODAY</h3>
+                <p>{aqiLevel}</p>
+            </div>
+            <div>
+                <p>AQI: {aqi}</p>
+                <p></p>
+            </div>
+            <div>
+                <p>{explainAQI}</p>
+            </div>
+        </div>
+    );
+}
+
+function ProfileEachforecast(props){
+    return (
+        <div className="air-forecast-daily">
+            <div className="date-container">
+                <h3 className="air-forecast-date">{props.date}</h3>
+            </div>
+            <div>
+                <div className="air-forecast-label">
+                    <label className="air-type">OZONE: {props.o3}</label>
+                </div>
+                <div className="air-level">
+                    <img src={props.o3imgURL} className="air-forecast-img"></img>
+                    <p>{props.o3Level}</p>
+                </div>
+            </div>
+            <div>
+                <div className="air-forecast-label">
+                    <label className="air-type">PM2.5: {props.pm25} </label>
+                </div>
+                <div className="air-level">
+                    <img src={props.pm25imgURL} className="air-forecast-img"></img>
+                    <p>{props.pm25Level}</p>
+                </div>
+            </div>
+            <div>
+                <div className="air-forecast-label">
+                    <label className="air-type">PM10: {props.pm10}</label>
+                </div>
+                <div className="air-level">
+                    <img src={props.pm10imgURL} className="air-forecast-img"></img>
+                    <p>{props.pm10Level}</p>
+                </div>       
+            </div>
+            <div>
+                <div className="air-forecast-label">
+                    <label className="air-type">UVI : {props.uvi}</label>
+                </div>
+                <div className="air-level">
+                    <img src={props.UVIimgURL} className="air-forecast-img"></img>
+                    <p>{props.uvLevel}</p>   
+                </div>  
+            </div>
+            <div>
+                <div className="air-forecast-label">
+                    <label className="air-type">DOMINENT POLLUTION : {props.dominentpol}</label>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function ProfileAirQualForecast(props){
+    let airData = props.airData;
+    
+    let o3 = '-';
+    let pm10 = '-';
+    let pm25 = '-';
+    let uvi = '-';
+    let o3imgURL = '/static/img/none.png';
+    let pm25imgURL = '/static/img/none.png';
+    let pm10imgURL = '/static/img/none.png';
+    let UVIimgURL = '/static/img/uvinone.png';
+    let o3Level = '';
+    let pm25Level = '';
+    let pm10Level = '';
+    let uvLevel = '';
+    let date;
+    let dominentpol = '';
+
+    //Get today's date
+    const now = new Date();
+    //get day of today
+    const day = now.getDate();
+
+    let airforecast = []; // It will be an array of each airforecast HTML block
+
+    if(airData){   
+        console.log(airData);  
+        for(let i = 0; i < 6; i++){
+            let airforecastDaily = airData[i];
+            console.log(airforecastDaily);
+            o3 = airforecastDaily['o3']; //affect ozone
+            pm10 = airforecastDaily['pm10'];
+            pm25 = airforecastDaily['pm25'];
+            uvi = airforecastDaily['uvi'];
+            dominentpol = airforecastDaily['dominentpol'];
+
+            //Extract the level from the index of each value
+            //o3
+            if(o3 < 65){
+                o3Level = 'GOOD';
+                o3imgURL = '/static/img/good.png';
+            } else if(o3 >= 65 && o3 < 85){
+                o3Level = 'MODERATE';
+                o3imgURL = '/static/img/moderate.png';
+            } else if(o3 >= 85 && o3 < 105){
+                o3Level = 'UNHEALTHY FOR SENSITIVE GROUPS';
+                o3imgURL = '/static/img/unhealthyfors.png';
+            } else if(o3 >= 105 && o3 < 125){
+                o3Level = 'UNHEALTHY';
+                o3imgURL = '/static/img/unhealthy.png';
+            } else if(o3 >= 125){
+                o3Level = 'VERY UNHEALTHY';
+                o3imgURL = '/static/img/veryunhealthy.png';
+            }
+            //pm10
+            if(pm10 < 55){
+                pm10Level = 'GOOD';
+                pm10imgURL = '/static/img/good.png';
+            } else if(pm10 >= 55 && pm10 < 155){
+                pm10Level = 'MODERATE';
+                pm10imgURL = '/static/img/moderate.png';
+            } else if(pm10 >= 155 && pm10 < 255){
+                pm10Level = 'UNHEALTHY FOR SENSITIVE GROUPS';
+                pm10imgURL = '/static/img/unhealthyfors.png';
+            } else if(pm10 >= 255 && pm10 < 355){
+                pm10Level = 'UNHEALTHY';
+                pm10imgURL = '/static/img/unhealthy.png';
+            } else if(pm10 >= 355 && pm10 < 455){
+                pm10Level = 'VERY UNHEALTHY';
+                pm10imgURL = '/static/img/veryunhealthy.png';
+            } else {
+                pm10Level = 'HAZARDOUS';
+                pm10imgURL = '/static/img/hazardous.png';
+            }
+            //pm25
+            if(pm25 <= 12){
+                pm25Level = 'GOOD';
+                pm25imgURL = '/static/img/good.png';
+            } else if(pm25 > 12 && pm25 < 35.5){
+                pm25Level = 'MODERATE';
+                pm25imgURL = '/static/img/moderate.png';
+            } else if(pm25 >= 35.5 && pm25 < 55.5){
+                pm25Level = 'UNHEALTHY FOR SENSITIVE GROUPS';
+                pm25imgURL = '/static/img/unhealthyfors.png';
+            } else if(pm25 >= 55.5 && pm25 < 150.5){
+                pm25Level = 'UNHEALTHY';
+                pm25imgURL = '/static/img/unhealthy.png';
+            } else if(pm25 >= 150.5 && pm25 < 251){
+                pm25Level = 'VERY UNHEALTHY';
+                pm25imgURL = '/static/img/veryunhealthy.png';
+            } else {
+                pm25Level = 'HAZARDOUS';
+                pm25imgURL = '/static/img/hazardous.png';
+            }
+            //uvi
+            if(uvi <= 2){
+                uvLevel = 'LOW';
+                UVIimgURL = '/static/img/uvilow.png';
+            } else if(uvi > 2 && uvi <= 5){
+                uvLevel = 'MODERATE';
+                UVIimgURL = '/static/img/uvimoderate.png';
+            } else if(uvi > 5 && uvi <= 7){
+                uvLevel = 'HIGH';
+                UVIimgURL = '/static/img/uvihigh.png';
+            } else if(uvi > 7 && uvi <= 10){
+                uvLevel = 'VERY HIGH';
+                UVIimgURL = '/static/img/uviveryhigh.png';
+            } else if(uvi > 10){
+                uvLevel = 'EXTREME';
+                UVIimgURL = '/static/img/uviextreme.png';
+            }
+
+            if(i === 0){
+                date = 'TODAY';
+                        
+            } else {
+                date = day + i;
+            }
+                    
+            airforecast.push(<ProfileEachforecast key={i} date={date} UVIimgURL={UVIimgURL} uvLevel={uvLevel} uvi={uvi}
+                            o3imgURL={o3imgURL} o3={o3} o3Level={o3Level}
+                            pm25imgURL={pm25imgURL} pm25={pm25} pm25Level={pm25Level}
+                            pm10imgURL={pm10imgURL} pm10={pm10} pm10Level={pm10Level} dominentpol={dominentpol}/>);
+            }
+    } else{
+        for(let i = 0; i < 6; i++){
+            if(i === 0){
+                date = 'TODAY';
+                        
+            } else {
+                date = day + i;
+            }
+        
+            airforecast.push(<ProfileEachforecast key={i} date={date} UVIimgURL={UVIimgURL} uvLevel={uvLevel} uvi={uvi}
+                    o3imgURL={o3imgURL} o3={o3} o3Level={o3Level}
+                    pm25imgURL={pm25imgURL} pm25={pm25} pm25Level={pm25Level}
+                    pm10imgURL={pm10imgURL} pm10={pm10} pm10Level={pm10Level} dominentpol={dominentpol}/>);
+        }
+    }
+    
+    
+
+    return(
+        <div className="air-forecast-section">
+            <div className="user-air-forecast-container">
+                <div className="air-forecast-h">
+                    <h3>AIR QUALITY FORECAST AROUND YOUR LOCATION</h3>
+                </div>
+                <div>
+                    {airforecast}
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function Profile(props){
     const [alertOn, setAlertOn] = React.useState(false);
+    const [airData, setAirData] = React.useState();
     console.log(alertRequest);
     const currentUser = props.user;
+
+    let uvi = '';
+    let aqi = '';
+
     
     //if there's user, get request to server to get user profile data from DB
-    $.get('/profile.json', {'current-user': currentUser}, (res)=>{
-        console.log(res);
-        const airforecast = res;
-        const day1 = airforecast['1'];
-        console.log(day1);
+    React.useEffect(() => {
+        $.get('/profile.json', {'current-user': currentUser}, (res)=>{
             
-        const aqi = day1['aqi'];
-        console.log(aqi);
-         
-    });
+            console.log(res);
+            setAirData(res);
+
+            uvi = res[1]['uvi'];
+            aqi = res[1]['aqi'];
+        
+        });
+    },[currentUser]);
 
     const alertRequest = (checked) =>{
         setAlertOn(checked);
@@ -337,14 +693,23 @@ function Profile(props){
     };
 
     return (
-        <section>
-            <h3>Profile</h3>
-            <p>Welcome!{currentUser}</p>
-            <div id="airqual-around-user">air quality graph</div>
-            <div id="air-forecast-around-user">air forecast</div>
-            <label>Air Quality Alert</label>
-            <ToggleSwitch checked={alertOn} onChange={alertRequest}/>
-        </section>
+        <React.Fragment>
+            <div className="user-info-section">
+                <div className="user-info-container">
+                    <h3>Profile</h3>
+                    <p>Welcome!{currentUser}</p>
+                    <label>Air Quality Alert</label>
+                    <ToggleSwitch checked={alertOn} onChange={alertRequest}/>
+                </div>
+            </div>
+            <div className="middle-section">
+                <ProfileUVIWidget uvi={uvi}/>
+                <ProfileAQIWidget aqi={aqi} />
+            </div>
+            <div className="user-airforecast-section">
+                <ProfileAirQualForecast airData={airData}/>
+            </div>
+        </React.Fragment>
     );
 }
 
@@ -382,6 +747,8 @@ function SearchBar (props) {
             'cur-search-by': searchBy,
             'cur-search-input': searchInput
         };
+        //update city value
+        props.setCity(searchInput);
         
         alert('onSubmit event handler is working');
         console.log(isError, searchFor, searchBy, searchInput);
@@ -391,7 +758,7 @@ function SearchBar (props) {
         //get ruquest to /search in the server
         $.get('/search', formInputs, (response)=>{
              //if search-for =='air-quality'
-            if ( formInputs['cur-search-for'] == 'air-quality'){
+            if ( formInputs['cur-search-for'] === 'air-quality'){
                 //store the response data into 'airData' variable
                 airData = response
                 console.log(airData);
@@ -400,7 +767,7 @@ function SearchBar (props) {
                 props.setMarkerData(airData);
                 
             //if search-for == 'fire
-            } else if(formInputs['cur-search-for'] == 'fire'){
+            } else if(formInputs['cur-search-for'] === 'fire'){
                 //store the response data into 'firData' variable
                 fireData = response
                 console.log(fireData);
@@ -413,7 +780,7 @@ function SearchBar (props) {
                 props.setMarkerData(fireData);  
                 
             //if search-for == 'soil
-            } else if(formInputs['cur-search-for'] == 'soil'){
+            } else if(formInputs['cur-search-for'] === 'soil'){
                 //store the response data into 'soilData' variable
                 soilData = response
                 console.log(soilData)
@@ -517,14 +884,7 @@ function MapContainer(props) {
       center: { lat: 37.77397, lng: -122.431297},
       zoom: 10
     });
-    //markers and marker options
-    const [markerOptions, setMarkerOptions ] = React.useState([{
-        position: {lat: 37.77397, lng: -122.431297},
-        title:'Fire Detection',
-        map: map
-    }]);
-    const [markers, setMarkers] = React.useState([]);
-
+    
 
     const mapDimensions = {
       width: '100%',
@@ -560,6 +920,11 @@ function MapContainer(props) {
                 const aqiInfo = airQualData['aqiInfo'];
                 console.log(latitude, longitude, aqi, co, no2, ozone, pm25, city, aqiInfo);
 
+                //Set option to change the map location along with the marker location
+                // setOptions({
+                //     center: { lat: latitude, lng: longitude},
+                //     zoom: 10
+                //   });
                 const airInfo = new google.maps.InfoWindow();
 
                 const airInfoContent = (`
@@ -714,6 +1079,389 @@ function MapContainer(props) {
         {MainMap}
       </div> 
     )
-  }
+}
+
+
+//--------- Homepage current UVI widget ---------//
+
+function UVIWidget(props){
+    const uviData = props.markerData;
+    console.log(uviData);
+
+    let uvi = '--'; // defualt value when the user hasn't searched anything yet
+    let uvLevel = '--'; // defualt value when the user hasn't searched anything yet
+    let explainUVI = '';
+    let uvimg = '/static/img/uvinone.png';
+
+    if(uviData){
+        try{
+            const forecastInfo = uviData['airforecast']['forecast'];
+            if(forecastInfo['daily']){
+                const uviInfo = forecastInfo['daily']['uvi']; //an array of uvi forecast
+                uvi = uviInfo[0]['avg']; //pull out today's uvi level
+                //find out uv level based on the uvi
+                if(uvi <= 2){
+                    uvLevel = 'LOW';
+                    uvimg = '/static/img/uvilow.png';
+                    explainUVI = `Wear sunglasses on bright days. 
+                            If you burn easily, cover up and use broad spectrum SPF 30+ sunscreen.
+                            Bright surfaces, sand, water, and snow will increase UV exposure.`;
+                } else if(uvi > 2 && uvi <= 5){
+                    uvLevel = 'MODERATE';
+                    uvimg = '/static/img/uvimoderate.png';
+                    explainUVI = `Stay in shade near midday when the SUN is strongest.
+                                If outdoors, wear sun-protective clothing, a wide-brimmed hat, and UV-blocking sunglasses
+                                Generously apply broad spectrum SPF 30+ sunscreen every 1.5 hours, even on cloudy days.
+                                Bright surfaces, sand, water, and snow will increase UV exposure.`;
+                } else if(uvi > 5 && uvi <= 7){
+                    uvLevel = 'HIGH';
+                    uvimg = '/static/img/uvihigh.png';
+                    explainUVI = `Reduce time in the sun between 10AM and 4PM. If outdoors, seek shade and wear sun-protective clothing,
+                                a wide-brimmed hat, and UV-blocking sunglasses. Generously apply broad spectrum SPF 30+ sunscreen
+                                every 1.5 hours, even on cloudy days. Bright surfaces, sand, water, and snow will increase UV exposure.`;
+                } else if(uvi > 7 && uvi <= 10){
+                    uvLevel = 'VERY HIGH';
+                    uvimg = '/static/img/uviveryhigh.png';
+                    explainUVI = `Minimize sun exposure between 10AM. and 4PM. If outdoors, seek shade and wear sun-protective clothing, 
+                                a wide-brimmed hat, and UV-blocking sunglasses. Generously apply broad spectrum SPF 30+ sunscreen every 1.5 hours, 
+                                even on cloudy days. Bright surfaces, such as sand, water, and snow, will increase UV exposure.`;
+                } else if(uvi > 10){
+                    uvLevel = 'EXTREME';
+                    uvimg = '/static/img/uviextreme.png';
+                    explainUVI = `Try to avoid sun exposure between 10 a.m. and 4 p.m. If outdoors, seek shade and wear sun-protective clothing, 
+                                a wide-brimmed hat, and UV-blocking sunglasses. Generously apply broad spectrum SPF 30+ sunscreen every 1.5 hours, 
+                                even on cloudy days. Bright surfaces, such as sand, water, and snow, will increase UV exposure.`;
+                }
+            }
+
+        } catch (e){
+            console.log(e);
+        }
+        
+    }
+
+
+    return(
+        <div className="uvi-container col">
+            <div>
+            <label>UV INDEX</label>
+            </div>
+            <div>
+                <label>CURRENT UV LEVEL</label>
+                <p>{uvLevel}</p>
+            </div>
+            <div>
+                <img className="uv-img" src={uvimg} alt="UVI IMG"></img>
+            </div>
+            <div>
+                <label>CURRENT UVI</label>
+                <p>{uvi}</p>
+            </div>
+            <p>{explainUVI}</p>
+        </div>
+    );
+}
+
+
+function AQIWidget(props){
+    const aqiData = props.markerData;
+    console.log(aqiData);
+
+    let aqiImg = '/static/img/aqinone.png';
+    let aqiLevel = '';
+    let aqi = '--';
+    let explainAQI = '--';
+
+    if(aqiData){
+        try{
+            aqi = aqiData['airforecast']['aqi'];
+
+            if(aqi <= 50){
+                aqiImg = '/static/img/aqigood.png';
+                aqiLevel = 'GOOD';
+                explainAQI = 'Air pollution poses little or no risk.';
+            } else if(aqi > 50 && aqi <= 100){
+                aqiImg = '/static/img/aqimoderate.png';
+                aqiLevel = 'MODERATE';
+                explainAQI = 'Health concern for people who are unusually sensitive to air pollution';
+            } else if(aqi > 100 && aqi <= 150){
+                aqiImg = '/static/img/aqiunhealthyfors.png';
+                aqiLevel = 'UNHEALTHY FOR SENSITIVE GROUPS';
+                explainAQI = 'Sensitve groups, young children and the elderly, may experience health effects';
+            } else if(aqi > 150 && aqi <= 200){
+                aqiImg = '/static/img/aqiunhealthy.png';
+                aqiLevel = 'UNHEALTHY';
+                explainAQI = 'Everyone may experience health effects; sensitive groups may experience more serious health effects.';
+            } else if(aqi > 200 && aqi <= 300){
+                aqiImg = '/static/img/aqiveryunhealthy.png';
+                aqiLevel = 'VERY UNHEALTHY';
+                explainAQI = 'Health alert: everyone may experience more serious health effects.';
+            } else {
+                aqiImg = '/static/img/aqihazardous.png';
+                aqiLevel = 'HAZARDOUS';
+                explainAQI = 'Health warnings of emergency conditions. The entire population is more likely to be affected.';
+            } 
+        } catch(e){
+            console.log(e);
+        }
+        
+    }
+
+    return(
+        <div className='aqi-container col'>
+            <div>
+                <label>AIR QUALITY INDEX</label>
+            </div>
+            <div>
+                <img className="aqi-img" src={aqiImg} alt="AQI IMG"></img>
+                <h3>TODAY</h3>
+                <p>{aqiLevel}</p>
+            </div>
+            <div>
+                <p>AQI: {aqi}</p>
+                <p></p>
+            </div>
+            <div>
+                <p>{explainAQI}</p>
+            </div>
+        </div>
+    );
+}
+
+
+function Eachforecast(props){
+    return (
+        <div className="air-forecast-daily">
+            <div className="date-container">
+                <h3 className="air-forecast-date">{props.date}</h3>
+            </div>
+            <div>
+                <div className="air-forecast-label">
+                    <label className="air-type">OZONE: {props.o3}</label>
+                </div>
+                <div className="air-level">
+                    <img src={props.o3imgURL} className="air-forecast-img"></img>
+                    <p>{props.o3Level}</p>
+                </div>
+            </div>
+            <div>
+                <div className="air-forecast-label">
+                    <label className="air-type">PM2.5: {props.pm25} </label>
+                </div>
+                <div className="air-level">
+                    <img src={props.pm25imgURL} className="air-forecast-img"></img>
+                    <p>{props.pm25Level}</p>
+                </div>
+            </div>
+            <div>
+                <div className="air-forecast-label">
+                    <label className="air-type">PM10: {props.pm10}</label>
+                </div>
+                <div className="air-level">
+                    <img src={props.pm10imgURL} className="air-forecast-img"></img>
+                    <p>{props.pm10Level}</p>
+                </div>       
+            </div>
+            <div>
+                <div className="air-forecast-label">
+                    <label className="air-type">UVI : {props.uvi}</label>
+                </div>
+                <div className="air-level">
+                    <img src={props.UVIimgURL} className="air-forecast-img"></img>
+                    <p>{props.uvLevel}</p>   
+                </div>  
+            </div>
+        </div>
+    );
+}
+
+
+function AirQualityForecast(props){
+    const airData = props.markerData;
+    
+    let o3 = '-';
+    let pm10 = '-';
+    let pm25 = '-';
+    let uvi = '-';
+    let city = '';
+    let o3imgURL = '/static/img/none.png';
+    let pm25imgURL = '/static/img/none.png';
+    let pm10imgURL = '/static/img/none.png';
+    let UVIimgURL = '/static/img/uvinone.png';
+    let o3Level = '';
+    let pm25Level = '';
+    let pm10Level = '';
+    let uvLevel = '';
+    let date;
+
+    //Get today's date
+    const now = new Date();
+    //get day of today
+    const day = now.getDate();
+
+    let airforecast = []; // It will be an array of objects
+
+    if(airData){
+        try{
+            let airforecastDaily;
+            const airForecastData = airData['airforecast'];
+
+            //Extract only the city name
+            city = "IN " + props.city.toUpperCase();
+
+            // Extract daily air forecasts
+            if(airForecastData['forecast']['daily']){
+                airforecastDaily = airForecastData['forecast']['daily'];
+                let lastUviIndex = airforecastDaily['uvi'].length - 1;
+                
+                for(let i = 0; i < 6; i++){
+                    o3 = airforecastDaily['o3'][i]['avg']; //affect ozone
+                    pm10 = airforecastDaily['pm10'][i]['avg'];
+                    pm25 = airforecastDaily['pm25'][i]['avg'];
+                
+                    if(i > lastUviIndex){
+                        uvi = airforecastDaily['uvi'][lastUviIndex]['avg'];
+                    } else {
+                        uvi = airforecastDaily['uvi'][i]['avg'];
+                    }
+
+                    //Extract the level from the index of each value
+                    //o3
+                    if(o3 < 65){
+                        o3Level = 'GOOD';
+                        o3imgURL = '/static/img/good.png';
+                    } else if(o3 >= 65 && o3 < 85){
+                        o3Level = 'MODERATE';
+                        o3imgURL = '/static/img/moderate.png';
+                    } else if(o3 >= 85 && o3 < 105){
+                        o3Level = 'UNHEALTHY FOR SENSITIVE GROUPS';
+                        o3imgURL = '/static/img/unhealthyfors.png';
+                    } else if(o3 >= 105 && o3 < 125){
+                        o3Level = 'UNHEALTHY';
+                        o3imgURL = '/static/img/unhealthy.png';
+                    } else if(o3 >= 125){
+                        o3Level = 'VERY UNHEALTHY';
+                        o3imgURL = '/static/img/veryunhealthy.png';
+                    }
+                    //pm10
+                    if(pm10 < 55){
+                        pm10Level = 'GOOD';
+                        pm10imgURL = '/static/img/good.png';
+                    } else if(pm10 >= 55 && pm10 < 155){
+                        pm10Level = 'MODERATE';
+                        pm10imgURL = '/static/img/moderate.png';
+                    } else if(pm10 >= 155 && pm10 < 255){
+                        pm10Level = 'UNHEALTHY FOR SENSITIVE GROUPS';
+                        pm10imgURL = '/static/img/unhealthyfors.png';
+                    } else if(pm10 >= 255 && pm10 < 355){
+                        pm10Level = 'UNHEALTHY';
+                        pm10imgURL = '/static/img/unhealthy.png';
+                    } else if(pm10 >= 355 && pm10 < 455){
+                        pm10Level = 'VERY UNHEALTHY';
+                        pm10imgURL = '/static/img/veryunhealthy.png';
+                    } else {
+                        pm10Level = 'HAZARDOUS';
+                        pm10imgURL = '/static/img/hazardous.png';
+                    }
+                    //pm25
+                    if(pm25 <= 12){
+                        pm25Level = 'GOOD';
+                        pm25imgURL = '/static/img/good.png';
+                    } else if(pm25 > 12 && pm25 < 35.5){
+                        pm25Level = 'MODERATE';
+                        pm25imgURL = '/static/img/moderate.png';
+                    } else if(pm25 >= 35.5 && pm25 < 55.5){
+                        pm25Level = 'UNHEALTHY FOR SENSITIVE GROUPS';
+                        pm25imgURL = '/static/img/unhealthyfors.png';
+                    } else if(pm25 >= 55.5 && pm25 < 150.5){
+                        pm25Level = 'UNHEALTHY';
+                        pm25imgURL = '/static/img/unhealthy.png';
+                    } else if(pm25 >= 150.5 && pm25 < 251){
+                        pm25Level = 'VERY UNHEALTHY';
+                        pm25imgURL = '/static/img/veryunhealthy.png';
+                    } else {
+                        pm25Level = 'HAZARDOUS';
+                        pm25imgURL = '/static/img/hazardous.png';
+                    }
+                    //uvi
+                    if(uvi <= 2){
+                        uvLevel = 'LOW';
+                        UVIimgURL = '/static/img/uvilow.png';
+                    } else if(uvi > 2 && uvi <= 5){
+                        uvLevel = 'MODERATE';
+                        UVIimgURL = '/static/img/uvimoderate.png';
+                    } else if(uvi > 5 && uvi <= 7){
+                        uvLevel = 'HIGH';
+                        UVIimgURL = '/static/img/uvihigh.png';
+                    } else if(uvi > 7 && uvi <= 10){
+                        uvLevel = 'VERY HIGH';
+                        UVIimgURL = '/static/img/uviveryhigh.png';
+                    } else if(uvi > 10){
+                        uvLevel = 'EXTREME';
+                        UVIimgURL = '/static/img/uviextreme.png';
+                    }
+
+                    if(i === 0){
+                        date = 'TODAY';
+                        
+                    } else {
+                        date = day + i;
+                    }
+                    
+                    airforecast.push(<Eachforecast key={i} date={date} UVIimgURL={UVIimgURL} uvLevel={uvLevel} uvi={uvi}
+                                    o3imgURL={o3imgURL} o3={o3} o3Level={o3Level}
+                                    pm25imgURL={pm25imgURL} pm25={pm25} pm25Level={pm25Level}
+                                    pm10imgURL={pm10imgURL} pm10={pm10} pm10Level={pm10Level}/>);
+                }
+            } else{
+                for(let i = 0; i < 6; i++){
+                    if(i === 0){
+                        date = 'TODAY';
+                        
+                    } else {
+                        date = day + i;
+                    }
+        
+                    airforecast.push(<Eachforecast key={i} date={date} UVIimgURL={UVIimgURL} uvLevel={uvLevel} uvi={uvi}
+                        o3imgURL={o3imgURL} o3={o3} o3Level={o3Level}
+                        pm25imgURL={pm25imgURL} pm25={pm25} pm25Level={pm25Level}
+                        pm10imgURL={pm10imgURL} pm10={pm10} pm10Level={pm10Level}/>);
+                }
+            }
+            
+        }catch(e){
+            console.log(e);
+        }
+        
+    } else {
+
+        for(let i = 0; i < 6; i++){
+            if(i === 0){
+                date = 'TODAY';
+                
+            } else {
+                date = day + i;
+            }
+
+            airforecast.push(<Eachforecast key={i} date={date} UVIimgURL={UVIimgURL} uvLevel={uvLevel} uvi={uvi}
+                o3imgURL={o3imgURL} o3={o3} o3Level={o3Level}
+                pm25imgURL={pm25imgURL} pm25={pm25} pm25Level={pm25Level}
+                pm10imgURL={pm10imgURL} pm10={pm10} pm10Level={pm10Level}/>);
+        }
+    }
+
+    return(
+        <div className="air-forecast-section">
+            <div className="air-forecast-container">
+                <div className="air-forecast-h">
+                    <h3>AIR QUALITY FORECAST {city}</h3>
+                </div>
+                <div>
+                    {airforecast}
+                </div>
+            </div>
+        </div>
+    );
+}
 
 ReactDOM.render(<App />, document.querySelector('#app'))

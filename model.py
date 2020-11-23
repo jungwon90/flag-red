@@ -69,6 +69,7 @@ class AirForecast(db.Model):
     air_forecast_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     pm10 = db.Column(db.Integer) # Particulate matter < 10um (ug/m3)
     pm25 = db.Column(db.Integer) # Particulate matter < 2.5um (ug/m3)
+    o3 = db.Column(db.Integer)
     uvi = db.Column(db.Integer) # Ultraviolet Radiation Index 
     dominentpol = db.Column(db.String) # dominent pollution
     aqi = db.Column(db.Integer, nullable=False) #air quality index

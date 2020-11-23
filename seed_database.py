@@ -45,32 +45,38 @@ def load_air_forecast():
         #Extract the data to create AirForecast object
 
         air_forecast_data = air_forecast['data']
-        air_forecast_daily = air_forecast_data['forecast']['daily']
+        if air_forecast_data['forecast'].get('daily', 0) != 0:
+            air_forecast_daily = air_forecast_data['forecast']['daily']
 
-        # create 6 days of air forecast
-        for i in range(6):   
-            pm10 = air_forecast_daily['pm10'][i]['avg'] 
-            pm25 = air_forecast_daily['pm25'][i]['avg']
-            dominentpol = air_forecast_data['dominentpol']
-            aqi = air_forecast_data['aqi']
-            lat = latitude
-            lng = longitude
-            time = air_forecast_data['time']['s']
-            # time = datetime.strptime(air_forecast_data['time']['s'], '%Y-%m-%d %H:%M:%S')
-            city_name = city['city']
-            #sometime, uvi has not enough length of forecast days
-            last_uvi_index = len(air_forecast_daily['uvi']) - 1
-            if i > last_uvi_index:
-                uvi = air_forecast_daily['uvi'][last_uvi_index]['avg']
-            else:
-                uvi = air_forecast_daily['uvi'][i]['avg'] 
-            print(pm10, pm25, uvi, dominentpol, aqi, lat, lng, time, city_name)
-                
-            # create AirForecast object(air quality forecast of today ~ todat + 7days)
-            # and store it into DB
-            air_obj = crud.create_airforecast(pm10, pm25, uvi, dominentpol, aqi, lat, lng, time, city_name)
-            airforecast_objs.append(air_obj)
-            print(f'AirForecast Object: {air_obj}')
+            # create 6 days of air forecast
+            for i in range(6):   
+                pm10 = air_forecast_daily['pm10'][i]['avg'] 
+                pm25 = air_forecast_daily['pm25'][i]['avg']
+                o3 = air_forecast_daily['o3'][i]['avg']
+                dominentpol = air_forecast_data['dominentpol']
+                aqi = air_forecast_data['aqi']
+                lat = latitude
+                lng = longitude
+                time = air_forecast_data['time']['s']
+                # time = datetime.strptime(air_forecast_data['time']['s'], '%Y-%m-%d %H:%M:%S')
+                city_name = city['city']
+                #sometime, uvi has not enough length of forecast days
+                last_uvi_index = len(air_forecast_daily['uvi']) - 1
+                if i > last_uvi_index:
+                    uvi = air_forecast_daily['uvi'][last_uvi_index]['avg']
+                else:
+                    uvi = air_forecast_daily['uvi'][i]['avg'] 
+                print(pm10, pm25, uvi, dominentpol, aqi, lat, lng, time, city_name)
+                    
+                # create AirForecast object(air quality forecast of today ~ todat + 7days)
+                # and store it into DB
+                air_obj = crud.create_airforecast(pm10, pm25, o3, uvi, dominentpol, aqi, lat, lng, time, city_name)
+                airforecast_objs.append(air_obj)
+                print(f'AirForecast Object: {air_obj}')
+        else:
+            print("There's no air forecast found")
+        
+        
     
     return airforecast_objs
 
