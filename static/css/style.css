@@ -22,6 +22,116 @@ body {
     padding: 0 0 0 0;
 
 }
+/*--------------  nav-bar --------------*/
+nav ion-icon{
+    color:  #525252;
+    font-size: 24px;
+}
+.navbar-ul-list-container{
+    width: 85%;
+}
+.navbar-ul-list{
+    list-style: none;
+    float: right;
+    margin-top: 10px;
+}
+
+.navbar-list{
+    text-transform: uppercase;
+    margin-left: 10px;
+}
+.navbar-list a:link,
+.navbar-list a:visited{
+    text-decoration: none;
+    color: #525252;
+    transition: color 0.2s;
+}
+
+.navbar-list a:hover,
+.navbar-list a:active{
+    color:  rgb(189, 79, 79);
+}
+
+.nav-item{
+    margin-bottom: 5px;
+}
+
+.nav-item a:link,
+.nav-item a:visited{
+    text-decoration: none;
+    color: #525252;
+    transition: color 0.2s;
+}
+
+.nav-item a:hover,
+.nav-item a:active{
+    color:rgb(189, 79, 79);
+}
+
+/*-------------- Home & Search Bar --------------*/
+.title-container ion-icon{
+    color: rgb(189, 79, 79);
+}
+.title-container{
+    text-align: center;
+    font-size: 60px;
+    font-weight: 500;
+    margin-top: 70px;
+    margin-bottom: 70px;
+}
+
+.search-bar-container{
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+.search-bar-label{
+    text-transform: uppercase;
+    margin-right: 25px;
+    font-size: 17px;
+    font-weight: 400;
+}
+
+#cur-search-for,
+#cur-search-by,
+#cur-search-input{
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 7px;
+}
+
+#search-btn{
+    text-transform: uppercase;
+    font: 'Lato';
+    font-weight: 400;
+    border-radius: 50px;
+    padding: 5px 20px;
+    background-color: #f4f4f4;
+}
+
+#search-btn:hover,
+#search-btn:active{
+    background-color: #aa3a3a;
+    color:  #f4f4f4;
+}
+
+/*-------------- About Page -------------*/
+
+.about-container{
+    height: 900px;
+    width: 80%;
+}
+
+.about-heading{
+    margin: 60px 50px 50px 50px;
+}
+
+.about-p{
+    margin-left: 30px;
+    margin-right: 30px;
+    font-size: 20px;
+}
 
 /*-------------- Contact Page -------------*/
 .contact-container{
@@ -30,7 +140,13 @@ body {
 }
 .contact-heading{
     margin-bottom: 50px;
+    margin-top: 30px;
 }
+
+.map-aqi{
+    font-weight: 400;
+}
+
 /*-------------- User Profile -------------*/
 .greeting-section{
     text-align: center;
@@ -142,9 +258,30 @@ body {
     height: auto;
 }
 
+.small-widgets{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-weight: 400;
+    font-size:22px;
+}
+
+.aqi-today{
+    font-size:20px;
+    font-weight: 300;
+}
+
+.uvi-level,
+.aqi-level{
+    font-weight: 400;
+}
+
+.index{
+    font-weight: 400;
+}
+
 /*--------------  Air Forecast widget--------------*/
 .air-forecast-section{
-    height: 1100px;
+    height: 90%;
     width: 100%;
 }
 
@@ -153,7 +290,7 @@ body {
     height: 60%;
     border: 1px solid #d0d0d0;
     margin-left: 10%;
-    margin-top: 180px;
+    margin-top: 170px;
     border-radius: 0.7em;
     box-shadow: 2px 2px 2px #747272;
     vertical-align: middle;
@@ -189,7 +326,7 @@ body {
 .air-forecast-label{
     font-weight: 400;
     display: inline-block;
-    width: 150px;
+    width: 50%;
     vertical-align: middle;
 }
 
@@ -200,8 +337,63 @@ body {
 .air-level{
     font-weight: 400;
     display: inline-block;
-    width: 150px;
+    width: 50%;
     vertical-align: middle;
+}
+
+/*-------------- World AQI --------------*/
+#mutiple-city-aqi{
+    text-align: center;
+    width: 80%;
+    height: 400px;
+    border: 1px solid #d0d0d0;
+    margin-left: 10%;
+    margin-top: 150px;
+    margin-bottom: 250px;
+    border-radius: 0.7em;
+    box-shadow: 2px 2px 2px #747272;
+    vertical-align: middle;
+}
+.each-city-aqi{
+    display: inline-block;
+    font-size: 20px;
+    margin: 30px 20px 30px 20px;
+}
+
+.global-aqi-heading{
+    margin-top: 50px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+#global-aqi-container{
+    vertical-align: middle;
+}
+
+#details-aqi-popup-0 {
+    font: 'Lato';
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#details-aqi-popup-1 {
+    font: 'Lato';
+    margin-right: 10px;
+}
+
+#details-aqi-popup-2 {
+    font: 'Lato';
+    margin-right: 10px;
+}
+
+#details-aqi-popup-3 {
+    font: 'Lato';
+    margin-right: 10px;
+}
+
+#details-aqi-popup-4 {
+    font: 'Lato';
+    margin-right: 10px;
 }
 /*-------------- Map --------------*/
 /* Always set the map height explicitly to define the size of the div
@@ -342,7 +534,6 @@ footer {
 
 .ion-social-facebook,
 .ion-social-twitter,
-.ion-social-googleplus,
 .ion-social-instagram {
     -webkit-transition: color 0.2s;
     transition: color 0.2s;
@@ -354,10 +545,6 @@ footer {
 
 .ion-social-twitter:hover {
     color: #55acee;
-}
-
-.ion-social-googleplus:hover {
-    color: #dd4b39;
 }
 
 .ion-social-instagram:hover {

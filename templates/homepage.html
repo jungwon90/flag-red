@@ -51,17 +51,16 @@
             <div class="row">
                 <div class="col span-1-of-2">
                     <ul class="footer-nav">
-                        <li><a href="#">About us</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="/about">About us</a></li>
+                        <li><a href="/contact">Contact</a></li>
                     </ul>
                 </div>
                         
                 <div class="col span-1-of-2">
                     <ul class="social-links">
-                        <li><a href="#"><i class="ion-social-facebook"></i></a></li>
-                        <li><a href="#"><i class="ion-social-twitter"></i></a></li>
-                        <li><a href="#"><i class="ion-social-googleplus"></i></a></li>
-                        <li><a href="#"><i class="ion-social-instagram"></i></a></li>
+                        <li><a href="#"><ion-icon name="logo-facebook" class="ion-social-facebook"></ion-icon></a></li>
+                        <li><a href="#"><ion-icon name="logo-twitter" class="ion-social-twitter"></ion-icon></a></li>
+                        <li><a href="#"><ion-icon name="logo-instagram" class="ion-social-instagram"></ion-icon></a></li>
                     </ul>
                 </div>
             </div>
@@ -78,7 +77,15 @@
         
         <!-- Nav Routing jsx import -->
         <script type="text/jsx" src="/static/js/navrouting.jsx"></script>
+        <!--Icons-->
+        <script src="https://unpkg.com/ionicons@5.2.3/dist/ionicons.js"></script>
 
+        <script  type="text/javascript"  charset="utf-8">  
+            (function(w,d,t,f){  w[f]=w[f]||function(c,k,n){s=w[f],k=s['k']=(s['k']||(k?('&k='+k):''));s['c']=  
+            c=(c  instanceof  Array)?c:[c];s['n']=n=n||0;L=d.createElement(t),e=d.getElementsByTagName(t)[0];  
+            L.async=1;L.src='//feed.aqicn.org/feed/'+(c[n].city)+'/'+(c[n].lang||'')+'/feed.v1.js?n='+n+k;  
+            e.parentNode.insertBefore(L,e);  };  })(  window,document,'script','_aqiFeed'  );    
+        </script>
         
     </body>
     

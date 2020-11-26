@@ -23,36 +23,37 @@ function App() {
             
             <div>
                 <nav className="navbar navbar-light bg-light">
-                    <i>flag red icon</i>
-                    <ul className="navbar-ul-list">
-                        <li className="navbar-list">
-                            <Link to="/signup">Sign Up</Link>
-                        </li>
-                        <li className="navbar-list">
-                            <Link to="/login">Log In</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/">Home</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/about">About</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/contact">Contact</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/profile">Profile</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/logout">Log out</Link>
-                        </li>
-                    </ul>  
+                    <ion-icon name="flag" className="flag-icon"></ion-icon>
+                    <div className="navbar-ul-list-container">
+                        <ul className="navbar-ul-list">
+                            <li className="navbar-list">
+                                <Link to="/signup">Sign Up</Link>
+                            </li>
+                            <li className="navbar-list">
+                                <Link to="/login">Log In</Link>
+                            </li>
+                        </ul>
+                    </div>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav mr-auto">
-                         
+                            <li className="nav-item">
+                                <Link to="/">Home</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link to="/about">About</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link to="/contact">Contact</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link to="/profile">Profile</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link to="/logout">Log out</Link>
+                            </li>
                         </ul>
                     </div>
                 </nav>
@@ -265,12 +266,17 @@ function Home(props){
 
     return (
         <React.Fragment>
-            <label>{loginMessage}</label> 
-            <label>Fleg Red</label>
-            <SearchBar setMarkerData={setMarkerData} setDataType={setDataType} setCity={setCity}/>
+            <label>{loginMessage}</label>
+            <div className="title-container">
+                <ion-icon name="flag" className="flag-icon"></ion-icon>
+                <label>Flag Red</label>
+            </div>
+            <div className="search-bar-container">
+                <SearchBar setMarkerData={setMarkerData} setDataType={setDataType} setCity={setCity}/>
+            </div> 
             <MapContainer markerData={markerData} dataType={dataType}/>
             <div className="air-qual-idx-img-container">
-                <label>AIR QUALITY INDEX</label>
+                <label className="map-aqi">AIR QUALITY INDEX</label>
                 <img className="air-qual-index-img" src="/static/img/aqi.png" alt="Air Quality Index"></img>
             </div>
             <div className="container">
@@ -278,29 +284,31 @@ function Home(props){
                 <AQIWidget markerData={markerData} />
             </div>
             <AirQualityForecast markerData={markerData} city={city}/>
+            <div>
+                <WorldAQIWidget /> 
+            </div>
         </React.Fragment>
     );
 }
 
 function About(){
     return (
-        <div>
-            <h3>We want to be your safeguard from air pollution.</h3>
-            <p>
+        <div className="about-container">
+            <h3 className="about-heading">We want to be your safeguard from air pollution.</h3>
+            <p className="about-p">
                 Polluted air affects well-being with disruption to our ecosystem and various health risks.
                 Flag Red helps identify pollution-dense in your location and monitor air pollution.
-                <br></br>
                 Poor air quality levels can aggravate respiratory ailments, wheezing, lowers immunity,
                 fatigue and much more. Air Pollution is also an indicator of global warming and climate change.
             </p>
-            <h3>Protect yourself from wildfires today.</h3>
-            <p>
+            <h3 className="about-heading">Protect yourself from wildfires today.</h3>
+            <p className="about-p">
                 Active fires not only disrupts an ecosystem with severe injuries, loos of life, and damage to
                 property. Fires also affects life in various forms with toxic amounts of lingering pollution in the air.
                 This is harmful to Human and Earth.
             </p>
-            <h3>Make better decisionss with the real-time soil data</h3>
-            <p>
+            <h3 className="about-heading">Make better decisionss with the real-time soil data</h3>
+            <p className="about-p">
                 Farmers and horticulturalists rely on soil condition and weather to estimate crop growth through
                 guesswork and experience with possible errors. Soil moisture and temperature dictate the type of biome
                 present and the land suitability for growing crops.
@@ -802,7 +810,7 @@ function SearchBar (props) {
         <div className = "row align-items-center active-fire-btn-container">
             <div className="col-10 mx-auto">
                 <form onSubmit={handleSubmit} id="search-form">
-                    <label>What are you looking for?</label>
+                    <label className="search-bar-label">What are you looking for?</label>
                      <select onChange={(e) => { 
                          e.preventDefault();
                          setSearchFor(e.target.value);
@@ -822,7 +830,7 @@ function SearchBar (props) {
                         e.preventDefault();
                         setSearchInput(e.target.value);
                     }} name="cur-search-input" id="cur-search-input"></input>
-                    <input type="submit" value="search"></input>
+                    <input type="submit" value="search" id="search-btn"></input>
                 </form>
             </div>
         </div>
@@ -884,7 +892,7 @@ function MapContainer(props) {
       center: { lat: 37.77397, lng: -122.431297},
       zoom: 10
     });
-    
+
 
     const mapDimensions = {
       width: '100%',
@@ -901,8 +909,16 @@ function MapContainer(props) {
         
         let latitude = 0;
         let longitude = 0;
+        
+        const flagMarker = {
+            url: '/static/img/flag-icon.png',
+            scaledSize: new window.google.maps.Size(50, 50),
+            origin: new window.google.maps.Point(0,0),
+            anchor: new window.google.maps.Point(40,40)
+        };
 
         if(props.markerData){
+
             if(props.dataType == 'air-quality'){
                 console.log(props.dataType)
                 //Extract coordinate and data for display from props.markerData
@@ -921,10 +937,7 @@ function MapContainer(props) {
                 console.log(latitude, longitude, aqi, co, no2, ozone, pm25, city, aqiInfo);
 
                 //Set option to change the map location along with the marker location
-                // setOptions({
-                //     center: { lat: latitude, lng: longitude},
-                //     zoom: 10
-                //   });
+                
                 const airInfo = new google.maps.InfoWindow();
 
                 const airInfoContent = (`
@@ -936,21 +949,25 @@ function MapContainer(props) {
                         <li><b>Carbon Monoxide: </b>${co}</li>
                         <li><b>Nitrogen Dioxide: </b>${no2}</li>
                         <li><b>Ozone: </b>${ozone}</li>
-                        <li><b>AQI Info: </b>${aqiInfo}</li>
                         </ul>
                     </div>
                 `);
 
+               
+
                 const airMarker = new window.google.maps.Marker({
                     position: {lat: latitude, lng: longitude},
                     title:'Air Quality Info',
-                    map: map});
+                    map: map,
+                    icon: flagMarker});
                     
                 airMarker.addListener('click', ()=>{
                     airInfo.close();
                     airInfo.setContent(airInfoContent);
                     airInfo.open(map, airMarker);
                 });
+
+                map.setCenter({lat:latitude, lng:longitude});
 
                 // Get API key from the server
                 let API_KEY2;
@@ -967,7 +984,7 @@ function MapContainer(props) {
                 });
                 
                 map.overlayMapTypes.insertAt(0, airQualMapOverlay);
-    
+               
             } else if(props.dataType == 'fire'){
                 console.log(props.dataType)
                 //Extract coordinate and data for display from props.markerData
@@ -1005,7 +1022,8 @@ function MapContainer(props) {
                     const fireMarker = new window.google.maps.Marker({
                         position: {lat: latitude, lng: longitude},
                         title:'Fire Detection',
-                        map: map});
+                        map: map,
+                        icon: flagMarker});
                     
                     fireMarker.addListener('click', ()=>{
                         fireInfo.close();
@@ -1047,7 +1065,8 @@ function MapContainer(props) {
                     const soilMarker = new window.google.maps.Marker({
                         position: {lat: latitude, lng: longitude},
                         title:'Soil Condition',
-                        map: map});
+                        map: map,
+                        icon: flagMarker});
                     
                     soilMarker.addListener('click', ()=>{
                         soilInfo.close();
@@ -1143,19 +1162,19 @@ function UVIWidget(props){
 
     return(
         <div className="uvi-container col">
-            <div>
+            <div class="small-widgets">
             <label>UV INDEX</label>
             </div>
             <div>
-                <label>CURRENT UV LEVEL</label>
-                <p>{uvLevel}</p>
+                <label className="level-label">CURRENT UV LEVEL</label>
+                <p className="uvi-level">{uvLevel}</p>
             </div>
             <div>
                 <img className="uv-img" src={uvimg} alt="UVI IMG"></img>
             </div>
             <div>
                 <label>CURRENT UVI</label>
-                <p>{uvi}</p>
+                <p className="index">{uvi}</p>
             </div>
             <p>{explainUVI}</p>
         </div>
@@ -1209,17 +1228,16 @@ function AQIWidget(props){
 
     return(
         <div className='aqi-container col'>
-            <div>
+            <div class="small-widgets">
                 <label>AIR QUALITY INDEX</label>
             </div>
             <div>
                 <img className="aqi-img" src={aqiImg} alt="AQI IMG"></img>
-                <h3>TODAY</h3>
-                <p>{aqiLevel}</p>
+                <h3 className="aqi-today">TODAY</h3>
+                <p className="aqi-level">{aqiLevel}</p>
             </div>
             <div>
-                <p>AQI: {aqi}</p>
-                <p></p>
+                <p>AQI: <span className="index">{aqi}</span></p>
             </div>
             <div>
                 <p>{explainAQI}</p>
@@ -1313,12 +1331,30 @@ function AirQualityForecast(props){
             if(airForecastData['forecast']['daily']){
                 airforecastDaily = airForecastData['forecast']['daily'];
                 let lastUviIndex = airforecastDaily['uvi'].length - 1;
+                let lastO3Index = airforecastDaily['o3'].length - 1;
+                let lastpm10Index = airforecastDaily['pm10'].length - 1;
+                let lastpm25Index = airforecastDaily['pm25'].length - 1;
                 
                 for(let i = 0; i < 6; i++){
-                    o3 = airforecastDaily['o3'][i]['avg']; //affect ozone
-                    pm10 = airforecastDaily['pm10'][i]['avg'];
-                    pm25 = airforecastDaily['pm25'][i]['avg'];
-                
+                    //extract the value of pm25 
+                    if(i > lastpm25Index){
+                        pm25 = airforecastDaily['pm25'][lastpm25Index]['avg'];
+                    }else {
+                        pm25 = airforecastDaily['pm25'][i]['avg'];
+                    }
+                    //extract the value of pm10
+                    if(i > lastpm10Index){
+                        pm10 = airforecastDaily['pm10'][lastpm10Index]['avg'];
+                    }else {
+                        pm10 = airforecastDaily['pm10'][i]['avg'];
+                    }
+                    //extract the value of o3
+                    if(i > lastO3Index){
+                        o3 = airforecastDaily['o3'][lastO3Index]['avg'];
+                    }else {
+                        o3 = airforecastDaily['o3'][i]['avg']; //affect ozone
+                    }
+                    //extract the value of uvi
                     if(i > lastUviIndex){
                         uvi = airforecastDaily['uvi'][lastUviIndex]['avg'];
                     } else {
@@ -1464,4 +1500,29 @@ function AirQualityForecast(props){
     );
 }
 
+function WorldAQIWidget(){
+
+    function displayCity(aqi){
+        $('#global-aqi-container').append(aqi.details);
+    }
+    
+    React.useEffect(() =>{
+        let cities = ['london', 'seoul', 'beijing', 'paris'];
+        let aqiWidgetconfig = [];
+        cities.forEach( (city) => {aqiWidgetconfig.push({city: city, callback: displayCity}); });
+        _aqiFeed(aqiWidgetconfig);
+    }, []);
+
+    return(
+        <div className="global-aqi">
+            <div  id="mutiple-city-aqi">
+                <div className="global-aqi-heading">
+                    <h3>REAL TIME AQI AROUND THE GLOBE</h3>
+                </div>
+                <div id="global-aqi-container">
+                </div>
+            </div> 
+        </div> 
+    );
+}
 ReactDOM.render(<App />, document.querySelector('#app'))
