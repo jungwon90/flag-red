@@ -95,19 +95,14 @@ function initMap() {
   }
   
 
-  /*
+  
   const sfMarker = new google.maps.Marker({
     position: { lat:  37.77397, lng: -122.431297 },
     title: 'SF Bay',
     map: firemap
   }); 
- */
-
-
+ 
   
-
-
-  /*
   sfMarker.addListener('click', ()=>{
     alert('Hi!');
   });
@@ -116,7 +111,7 @@ function initMap() {
     content: '<h1>San Francisco!</h1>'
   });
 
-  sfInfo.open(firemap, sfMarker); */
+  sfInfo.open(firemap, sfMarker); 
 }
 
 

@@ -2,22 +2,18 @@
 
 ### Why do we need Flag Red?
 
-Since 1970, wildfires frequency in U.S. has increased by 400%. 
-There has not been a month without wildfires since 2012. 
-Woolsey fire burned 97,000 acres destroying 1,600 buildings and 
-forcing 81,000 people to evacuate their homes.
+- We want to be your safeguard from air pollution.
+Polluted air affects well-being with disruption to our ecosystem and various health risks. Flag Red helps identify pollution-dense in your location and monitor air pollution. Poor air quality levels can aggravate respiratory ailments, wheezing, lowers immunity, fatigue and much more. Air Pollution is also an indicator of global warming and climate change.
+
+- Protect yourself from wildfires today.
+Active fires not only disrupts an ecosystem with severe injuries, loos of life, and damage to property. Fires also affects life in various forms with toxic amounts of lingering pollution in the air. This is harmful to Human and Earth.
+
+- Make better decisions with the real-time soil data
+Farmers and horticulturalists rely on soil condition and weather to estimate crop growth through guesswork and experience with possible errors. Soil moisture and temperature dictate the type of biome present and the land suitability for growing crops.
 
 ### Overview
 
-Wild Fire Monitoring Service with air quality/pollution.
-
-The app makes the users aware of active fires at all times.
-
-It  informs your users of nearby active fires with the pollution increase 
-in the air surrounding them.
-
-It also inform your users of the seasonal and locational increase in air pollution 
-caused by fires and advise them on the safest places outdoors for a run or even to walk their dog.
+Flag Red is a web app displays air quality information, active fires, soil condition around the location users type in as well as  global scope of air qualities.  A user types in the city/zip code to check the air quality, active fire, soil condition and the map will display a red flag marker that shows detailed information that user's looking for. Depending on the location the user types in, the widgets below the map show the air quality index and UV index, six days of air quality forecast  in  that location. On the profile page, users can switch on to get SMS service for air quality alerts and also can see the air quality index and UV index, six days of air quality forecast around the user's location without searching on the main page.
 
 
 
@@ -39,23 +35,23 @@ Ambee fire/air quality API, WAQI API, Google Maps API.
 
 #### MVP
 
-- If the user doesn't type any city or region, the User can see 
-the whole active fire situcation in the U.S.
-- Users can type a city or legion and Seach the wild files happening in the region.
-- Users can see air quality together when they see the active fires
-
+- Users can type a city or zip code to Seach the air quality/active fire/soil condition around the location.
+- Map shows the air quality markers with colors based on the air quality index.
+- Map shows active fire markers with the detailed information about the fire detection.
+- Map shows a marker that contains soil condition.
+- Users can switch on to get air quality alerts on Profile.
+- Users can see current UV index, current air quality, air quality forecast based on the user's location.
 
 
 #### 2.0
 
-- The User can log-in 
-- Users can set the wild fire alert online
+- Users can log-in with Facebook, google, twitter
+- Add wild fire alert.
 
 
 #### 3.0
 
-- Users can log-in with Facebook, google, twitter
-- Users can share the fire alert/current wildfire on Socail Media.
-- Users can wee the statistic analization graph of wildfire around the User's location.
+- Users can share the fire alert/current wildfire on Socail Media though Flag Red homepage.
+- Users can wee the statistic analization graph of air quality around the User's location.
 
 ### Notes

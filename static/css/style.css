@@ -68,6 +68,17 @@ nav ion-icon{
     color:rgb(189, 79, 79);
 }
 
+/* Sticky navi */
+.sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.90);
+    box-shadow: 0 2px 2px #efefef;
+    z-index: 9999;
+}
+
 /*-------------- Home & Search Bar --------------*/
 .title-container ion-icon{
     color: rgb(189, 79, 79);
@@ -76,7 +87,7 @@ nav ion-icon{
     text-align: center;
     font-size: 60px;
     font-weight: 500;
-    margin-top: 70px;
+    margin-top: 140px;
     margin-bottom: 70px;
 }
 
@@ -108,10 +119,107 @@ nav ion-icon{
     border-radius: 50px;
     padding: 5px 20px;
     background-color: #f4f4f4;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 #search-btn:hover,
 #search-btn:active{
+    background-color: #aa3a3a;
+    color:  #f4f4f4;
+}
+
+/*-------------- Sign-up Page -------------*/
+.signup{
+    height: 900px;
+    text-align: center;
+}
+
+#signup-form{
+    margin-top: 180px;
+}
+
+.signup-label{
+    text-transform: uppercase;
+    margin-bottom: 25px;
+    font-weight: 400;
+    font-size: 20px;
+}
+
+.signup-inputs{
+    text-align: end;
+    width: 65%;
+    height: auto;
+    margin-bottom: 12px;
+}
+
+#input-id{
+    width: 116px;
+    margin-right: 1px;
+}
+
+.signup-input-label{
+    margin-right: 10px;
+}
+#signup-btn{
+    font: 'Lato';
+    font-weight: 400;
+    margin-top: 10px;
+    border-radius: 50px;
+    padding: 5px 20px;
+    background-color: #f4f4f4;
+    transition: background-color 0.2s, color 0.2s;
+}
+#signup-btn:hover,
+#signup-btn:active{
+    background-color: #aa3a3a;
+    color:  #f4f4f4;
+}
+
+#id-validation-btn{
+    font: 'Lato';
+    font-weight: 400;
+    border-radius: 13px;
+    padding: 1px 5px;
+    background-color: #f4f4f4;
+}
+/*-------------- Log-in Page -------------*/
+.login{
+    height: 900px;
+    text-align: center;
+}
+
+#login-form{
+    margin-top: 320px;
+}
+.login-label{
+    margin-bottom: 23px;
+    font-weight: 400;
+    font-size: 20px;
+}
+
+.login-inputs{
+    text-align: end;
+    width: 65%;
+    height: auto;
+    margin-bottom: 12px;
+}
+
+.login-input-label{
+    margin-right: 10px;
+
+}
+
+#login-btn{
+    font: 'Lato';
+    font-weight: 400;
+    border-radius: 50px;
+    padding: 5px 20px;
+    background-color: #f4f4f4;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+#login-btn:hover,
+#login-btn:active{
     background-color: #aa3a3a;
     color:  #f4f4f4;
 }
@@ -121,6 +229,7 @@ nav ion-icon{
 .about-container{
     height: 900px;
     width: 80%;
+    margin-top: 200px;
 }
 
 .about-heading{
@@ -137,6 +246,8 @@ nav ion-icon{
 .contact-container{
     height: 1100px;
     width: 100%;
+    margin-top: 200px;
+    margin-left: 50px;
 }
 .contact-heading{
     margin-bottom: 50px;
@@ -148,10 +259,25 @@ nav ion-icon{
 }
 
 /*-------------- User Profile -------------*/
+.profile-container{
+    width: 100%;
+    height: 100%;
+}
 .greeting-section{
     text-align: center;
 }
-
+.air-qual-alert-label{
+    margin-right: 20px;
+    font-weight: 400;
+}
+.profile-heading{
+    text-transform: uppercase;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.profile-welcoming{
+    margin-bottom: 20px;
+}
 .user-info-section{
     text-align: center;
 }
@@ -168,12 +294,16 @@ nav ion-icon{
     vertical-align: middle;
 }
 .middle-section{
+    width: 100%;
+    height: 100%;
     text-align: center;
 }
+
 .user-uvi-container{
+    position: relative;
     display: inline-block;
-    width: 40%;
-    height: 500px;
+    width: 30%;
+    height: 600px;
     border: 1px solid #d0d0d0;
     text-align: center;
     margin-top: 100px;
@@ -183,15 +313,21 @@ nav ion-icon{
 }
 
 .user-aqi-container{
+    position: relative;
     display: inline-block;
-    width: 40%;
-    height: 500px;
+    width: 30%;
+    height: 600px;
     border: 1px solid #d0d0d0;
     text-align: center;
+    margin-left: 5%;
     margin-top: 100px;
     border-radius: 0.7em;
     box-shadow: 2px 2px 2px #747272;
     vertical-align: middle;
+}
+
+.user-airforecast-section{
+    margin-bottom: 200px;
 }
 .user-air-forecast-container{
     width: 80%;
@@ -219,11 +355,13 @@ nav ion-icon{
     padding-top: 0;
 }
 
+
+
 /*--------------  UVI widget--------------*/
 .uvi-container{
     display: inline-block;
     width: 40%;
-    height: 500px;
+    height: 600px;
     border: 1px solid #d0d0d0;
     text-align: center;
     margin-left: 5%;
@@ -235,7 +373,7 @@ nav ion-icon{
 }
 
 .uv-img{
-    width: 50%;
+    width: 40%;
     height: auto;
 }
 
@@ -243,7 +381,7 @@ nav ion-icon{
 .aqi-container{
     display: inline-block;
     width: 40%;
-    height: 500px;
+    height: 600px;
     border: 1px solid #d0d0d0;
     text-align: center;
     margin-left: 10%;
@@ -254,7 +392,7 @@ nav ion-icon{
 }
 
 .aqi-img{
-    width: 50%;
+    width: 40%;
     height: auto;
 }
 

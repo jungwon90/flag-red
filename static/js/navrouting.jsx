@@ -16,17 +16,33 @@ function App() {
     const [user, setUser] = React.useState('');
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
     const [signedup, setSignedup] = React.useState(false);
+ 
+    React.useEffect(()=>{
+        const navBar = document.querySelector('.navbar');
+        const stickyTop = document.querySelector('.js--section-features').offsetTop;
+        const scrollCallBack = window.addEventListener('scroll', () =>{
+            if(window.pageYOffset > stickyTop){
+                navBar.classList.add('sticky');
+            } else{
+                navBar.classList.remove('sticky');
+            }
+        });
 
+        return ()=>{
+            window.removeEventListener('scroll', scrollCallBack);
+        }
+
+    }, []);
 
     return (
         <Router>
             
             <div>
-                <nav className="navbar navbar-light bg-light">
+                <nav className="navbar navbar-light bg-light sticky">
                     <ion-icon name="flag" className="flag-icon"></ion-icon>
                     <div className="navbar-ul-list-container">
                         <ul className="navbar-ul-list">
-                            <li className="navbar-list">
+                            <li className="navbar-list main-nav">
                                 <Link to="/signup">Sign Up</Link>
                             </li>
                             <li className="navbar-list">
@@ -38,7 +54,7 @@ function App() {
                         <span className="navbar-toggler-icon"></span>
                     </button>
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul className="navbar-nav mr-auto">
+                        <ul className="navbar-nav mr-auto main-nav">
                             <li className="nav-item">
                                 <Link to="/">Home</Link>
                             </li>
@@ -112,8 +128,20 @@ function Signup(props){
                 }
             }
 
+            //if the ID is valid show a pop-up message
             if(isValid){
-                alert('This ID is valid');
+                Toastify({
+                    text: 'This ID is valid',
+                    duration: 3000,
+                    destination: "https://github.com/apvarun/toastify-js",
+                    newWindow: true,
+                    close: true,
+                    gravity: "top", // `top` or `bottom`
+                    position: "left", // `left`, `center` or `right`
+                    backgroundColor: "linear-gradient(to right, #39E5B6, #70B2D9)",
+                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                    onClick: function(){} // Callback after click
+                }).showToast();
             }
         });
     }
@@ -134,68 +162,80 @@ function Signup(props){
         $.post('/signup', formInputs, (res) =>{
             console.log(res);
             if(res['success']){
-                alert('Account created! Please log in!');
+                //if successfully logged in, show a pop-up message
+                Toastify({
+                    text: 'Account created! Please log in!',
+                    duration: 3000,
+                    destination: "https://github.com/apvarun/toastify-js",
+                    newWindow: true,
+                    close: true,
+                    gravity: "top", // `top` or `bottom`
+                    position: "left", // `left`, `center` or `right`
+                    backgroundColor: "linear-gradient(to right, #39E5B6, #70B2D9)",
+                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                    onClick: function(){} // Callback after click
+                }).showToast();
                 props.setSignedup(true);
             }
         });
     }
 
     return (
-        <div className="container">
+        <div className="container signup">
             <div className = "row align-items-center">
                 <div className="col-10 mx-auto">
                     <form onSubmit={handleSubmit} id="signup-form">
-                        <label>Sign Up</label>
-                        <div className="user-id-input">
-                            <label>ID</label>
+                        <label className="signup-label">Sign Up</label>
+                        <div className="user-id-input signup-inputs">
+                            <label className="signup-input-label">ID</label>
                             <input onChange={e => { 
                                 e.preventDefault();
-                                setIdInput(e.target.value);}} type="text" name="input-id"></input>
+                                setIdInput(e.target.value);}} type="text" name="input-id" id="input-id"></input>
                             <button onClick={handleValidId} id="id-validation-btn">Valid?</button>
                         </div>
-                        <div>
-                            <label>First Name</label>
+                        <div className="signup-inputs">
+                            <label className="signup-input-label">First Name</label>
                             <input onChange={e => {
                                 e.preventDefault();
                                 setFirstName(e.target.value)
                             }} type="text" name="first-name"></input>
                         </div>
-                        <div>
-                            <label>Last Name</label>
+                        <div className="signup-inputs">
+                            <label className="signup-input-label">Last Name</label>
                             <input onChange={e =>{
                                 e.preventDefault();
                                 setLastName(e.target.value);
                             }}type="text" name="last-name"></input>
                         </div>
-                        <div>
-                            <label>Password</label>
+                        <div className="signup-inputs">
+                            <label className="signup-input-label">Password</label>
                             <input onChange={e =>{
                                 e.preventDefault();
                                 setPassword(e.target.value);
-                            }} type="text" name="password"></input>
+                            }} type="password" name="password"></input>
                         </div>
-                        <div>
-                            <label>Email</label>
+                        <div className="signup-inputs">
+                            <label className="signup-input-label">Email</label>
                             <input onChange={e =>{
                                 e.preventDefault();
                                 setEmail(e.target.value);
                             }} type="text" name="email"></input>
                         </div>
-                        <div>
-                            <label>Phone Number</label>
+                        <div className="signup-inputs">
+                            <label className="signup-input-label">Phone Number</label>
                             <input onChange={e =>{
                                 e.preventDefault();
                                 setPhoneNumber(e.target.value);
                             }} type="text" name="phone-number"></input>
                         </div>
-                        <div>
-                            <label>City</label>
+                        <div className="signup-inputs">
+                            <label className="signup-input-label">City</label>
                             <input onChange={e =>{
                                 e.preventDefault();
                                 setCity(e.target.value);
                             }} type="text" name="city"></input>
                         </div>
-                        <input type="submit" value="Sign Up"></input>
+                        <input type="submit" value="Sign Up" id="signup-btn"></input>
                     </form>
                 </div>
             </div>
@@ -203,10 +243,20 @@ function Signup(props){
     );
 }
 
+function LoggedinPopup(props){
+    return(
+        <div>
+            <label>{props.alertMessage}</label>
+            <button onClick={handleClose}>OK</button>
+            
+        </div>
+    )
+}
 
 function Login(props){
     const [id, setId] = React.useState('');
     const [password, setPassword] = React.useState('');
+    
 
     const handleSubmit = async e =>{
         e.preventDefault();
@@ -217,38 +267,54 @@ function Login(props){
         }
         //post request to server
         $.post('/login', formInputs, (res) =>{
-            alert(res['message']);
+            
             if(res['message'] === 'Logged in!'){
                 props.setIsLoggedIn(true);
                 props.setUser(id);
             }
+
+            Toastify({
+                text: `${res['message']}`,
+                duration: 3000,
+                destination: "https://github.com/apvarun/toastify-js",
+                newWindow: true,
+                close: true,
+                gravity: "top", // `top` or `bottom`
+                position: "left", // `left`, `center` or `right`
+                backgroundColor: "linear-gradient(to right, #39E5B6, #70B2D9)",
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                onClick: function(){} // Callback after click
+            }).showToast();
+
         });
     }
+    
 
     return (
-        <div className="container">
+        <div className="container login">
             <div className = "row align-items-center">
                 <div className="col-10 mx-auto">
                     <form onSubmit={handleSubmit} id="login-form">
-                        <label>LOG IN</label>
-                        <div>
-                            <label>ID</label>
+                        <label className="login-label">LOG IN</label>
+                        <div className="login-inputs">
+                            <label className="login-input-label">ID</label>
                             <input onChange={e => {
                                 e.preventDefault();
                                 setId(e.target.value);
                             }} type="text" name="id"></input>
                         </div>
-                        <div>
-                            <label>PASSWORD</label>
+                        <div className="login-inputs">
+                            <label className="login-input-label">PASSWORD</label>
                             <input onChange={e =>{
                                 e.preventDefault();
                                 setPassword(e.target.value);
-                            }} type="text" name="password"></input>
+                            }} type="password" name="password"></input>
                         </div>
-                        <input type="submit" value="Log-In"></input>
+                        <input type="submit" value="Log-In" id="login-btn"></input>
                     </form>
                 </div>
             </div>
+        {/* {showPopup ? <LoggedinPopup alertMessage={alertMessage}/> : null} */}
         </div>
     );
 }
@@ -264,12 +330,13 @@ function Home(props){
         loginMessage = "You're logged in!";
     }
 
+
     return (
-        <React.Fragment>
+        <div>
             <label>{loginMessage}</label>
             <div className="title-container">
                 <ion-icon name="flag" className="flag-icon"></ion-icon>
-                <label>Flag Red</label>
+                <label className="flag-red">Flag Red</label>
             </div>
             <div className="search-bar-container">
                 <SearchBar setMarkerData={setMarkerData} setDataType={setDataType} setCity={setCity}/>
@@ -279,7 +346,7 @@ function Home(props){
                 <label className="map-aqi">AIR QUALITY INDEX</label>
                 <img className="air-qual-index-img" src="/static/img/aqi.png" alt="Air Quality Index"></img>
             </div>
-            <div className="container">
+            <div className="container js--section-features">
                 <UVIWidget markerData={markerData}/>
                 <AQIWidget markerData={markerData} />
             </div>
@@ -287,7 +354,7 @@ function Home(props){
             <div>
                 <WorldAQIWidget /> 
             </div>
-        </React.Fragment>
+        </div>
     );
 }
 
@@ -384,24 +451,27 @@ function ProfileUVIWidget(props){
 
     return (
         <div className="user-uvi-container">
-            <div>
+            <div className="small-widgets">
             <label>UV INDEX</label>
             </div>
             <div>
-                <label>CURRENT UV LEVEL</label>
-                <p>{uvLevel}</p>
+                <label className="level-label">CURRENT UV LEVEL</label>
+                <p className="uvi-level">{uvLevel}</p>
             </div>
             <div>
                 <img className="uv-img" src={uvimg} alt="UVI IMG"></img>
             </div>
             <div>
                 <label>CURRENT UVI</label>
-                <p>{uvi}</p>
+                <p className="index">{uvi}</p>
             </div>
             <p>{explainUVI}</p>
         </div>
     );
 }
+
+
+
 
 function ProfileAQIWidget(props){
     const aqi = props.aqi
@@ -437,16 +507,16 @@ function ProfileAQIWidget(props){
 
     return(
         <div className='user-aqi-container'>
-            <div>
+            <div className="small-widgets">
                 <label>AIR QUALITY INDEX</label>
             </div>
             <div>
                 <img className="aqi-img" src={aqiImg} alt="AQI IMG"></img>
-                <h3>TODAY</h3>
-                <p>{aqiLevel}</p>
+                <h3 className="aqi-today">TODAY</h3>
+                <p className="aqi-level">{aqiLevel}</p>
             </div>
             <div>
-                <p>AQI: {aqi}</p>
+                <p>AQI: <span className="index">{aqi}</span></p>
                 <p></p>
             </div>
             <div>
@@ -500,8 +570,11 @@ function ProfileEachforecast(props){
             </div>
             <div>
                 <div className="air-forecast-label">
-                    <label className="air-type">DOMINENT POLLUTION : {props.dominentpol}</label>
+                    <label className="air-type">DOMINENT POLLUTION</label>
                 </div>
+                <div className="air-level">
+                    <p>{props.dominentpol}</p>
+                </div> 
             </div>
         </div>
     );
@@ -666,11 +739,10 @@ function ProfileAirQualForecast(props){
 function Profile(props){
     const [alertOn, setAlertOn] = React.useState(false);
     const [airData, setAirData] = React.useState();
+    const [uvi, setUVI] = React.useState(0);
+    const [aqi, setAQI] = React.useState(0);
     console.log(alertRequest);
     const currentUser = props.user;
-
-    let uvi = '';
-    let aqi = '';
 
     
     //if there's user, get request to server to get user profile data from DB
@@ -680,12 +752,16 @@ function Profile(props){
             console.log(res);
             setAirData(res);
 
-            uvi = res[1]['uvi'];
-            aqi = res[1]['aqi'];
+            let newUvi = res[1]['uvi'];
+            let newAqi = res[1]['aqi'];
+            //set uvi, aqi
+            setUVI(newUvi);
+            setAQI(newAqi);
         
         });
-    },[currentUser]);
+    },[aqi, uvi]);
 
+    //toggle switch event handler
     const alertRequest = (checked) =>{
         setAlertOn(checked);
         
@@ -701,12 +777,12 @@ function Profile(props){
     };
 
     return (
-        <React.Fragment>
+        <div className="profile-container">
             <div className="user-info-section">
                 <div className="user-info-container">
-                    <h3>Profile</h3>
-                    <p>Welcome!{currentUser}</p>
-                    <label>Air Quality Alert</label>
+                    <h3 className="profile-heading">Profile</h3>
+                    <p className="profile-welcoming">WELCOME! {currentUser}</p>
+                    <label className="air-qual-alert-label">Air Quality Alert</label>
                     <ToggleSwitch checked={alertOn} onChange={alertRequest}/>
                 </div>
             </div>
@@ -717,7 +793,7 @@ function Profile(props){
             <div className="user-airforecast-section">
                 <ProfileAirQualForecast airData={airData}/>
             </div>
-        </React.Fragment>
+        </div>
     );
 }
 
@@ -727,7 +803,19 @@ function Logout(props){
     if(props.isLoggedIn){
         $.post('/logout', (res)=>{
             props.setIsLoggedIn(false);
-            alert(res['message']);
+            //if logged out, show a pop-up message
+            Toastify({
+                text: `${res['message']}`,
+                duration: 3000,
+                destination: "https://github.com/apvarun/toastify-js",
+                newWindow: true,
+                close: true,
+                gravity: "top", // `top` or `bottom`
+                position: "left", // `left`, `center` or `right`
+                backgroundColor: "linear-gradient(to right, #39E5B6, #70B2D9)",
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                onClick: function(){} // Callback after click
+            }).showToast();
         });
     }
 
@@ -758,11 +846,12 @@ function SearchBar (props) {
         //update city value
         props.setCity(searchInput);
         
-        alert('onSubmit event handler is working');
+        //alert('onSubmit event handler is working');
         console.log(isError, searchFor, searchBy, searchInput);
         //updating state of props.dataType(set to searchFor)
         props.setDataType(searchFor);
 
+    
         //get ruquest to /search in the server
         $.get('/search', formInputs, (response)=>{
              //if search-for =='air-quality'
@@ -966,7 +1055,7 @@ function MapContainer(props) {
                     airInfo.setContent(airInfoContent);
                     airInfo.open(map, airMarker);
                 });
-
+                //relocate the map center
                 map.setCenter({lat:latitude, lng:longitude});
 
                 // Get API key from the server
@@ -1030,6 +1119,8 @@ function MapContainer(props) {
                         fireInfo.setContent(fireInfoContent);
                         fireInfo.open(map, fireMarker);
                     });
+                    //relocate the map center
+                    map.setCenter({lat:latitude, lng:longitude});
                 }
 
                 if(fireData.length === 0){
@@ -1073,6 +1164,8 @@ function MapContainer(props) {
                         soilInfo.setContent(soilInfoContent);
                         soilInfo.open(map, soilMarker);
                     });
+                    //relocate the map center
+                    map.setCenter({lat:latitude, lng:longitude});
                 }
             }
         }
@@ -1162,7 +1255,7 @@ function UVIWidget(props){
 
     return(
         <div className="uvi-container col">
-            <div class="small-widgets">
+            <div className="small-widgets">
             <label>UV INDEX</label>
             </div>
             <div>
@@ -1228,7 +1321,7 @@ function AQIWidget(props){
 
     return(
         <div className='aqi-container col'>
-            <div class="small-widgets">
+            <div className="small-widgets">
                 <label>AIR QUALITY INDEX</label>
             </div>
             <div>
