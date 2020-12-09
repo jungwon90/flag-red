@@ -15,6 +15,17 @@ Farmers and horticulturalists rely on soil condition and weather to estimate cro
 
 Flag Red is a web app displays air quality information, active fires, soil condition around the location users type in as well as  global scope of air qualities.  A user types in the city/zip code to check the air quality, active fire, soil condition and the map will display a red flag marker that shows detailed information that user's looking for. Depending on the location the user types in, the widgets below the map show the air quality index and UV index, six days of air quality forecast  in  that location. On the profile page, users can switch on to get SMS service for air quality alerts and also can see the air quality index and UV index, six days of air quality forecast around the user's location without searching on the main page.
 
+![Flag Red Demo](demo/1.gif)
+
+
+![Flag Red Demo](demo/2.gif)
+
+
+![Flag Red Demo](demo/3.gif)
+
+
+![Flag Red Demo](demo/4.gif)
+
 
 
 ### Technologies required (besides typical Hackbright tech stack)
