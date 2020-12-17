@@ -28,7 +28,7 @@ Flag Red is a web app displays air quality information, active fires, soil condi
 
 
 
-### Technologies required (besides typical Hackbright tech stack)
+### Technologies required 
 
 Fire data API from ambee. Air quality API from ambee.
 
