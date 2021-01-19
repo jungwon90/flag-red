@@ -119,7 +119,7 @@ function Signup(props){
         $.get('/valid.json', (res) =>{
             console.log(res);
             let isValid = true;
-            for(const userId of res){
+            for(const userId of res){ 
                 //if the id is valid, alert(id is valid)
                 if(userId === idInput){
                     alert('This ID is not valid');

@@ -32,7 +32,7 @@ Flag Red is a web app displays air quality information, active fires, soil condi
 
 Fire data API from ambee. Air quality API from ambee.
 
-Python, Javascript, HTML5, CSS3, Flask, React, Bootstrap
+Python, Javascript, HTML5, CSS3, Flask, React, Bootstrap, SQL, PostgreSQL
 
 
 

@@ -96,6 +96,7 @@ def connect_to_db(flask_app, db_uri='postgresql:///flagred', echo=True):
 
 
 if __name__ == '__main__':
+    print('model.py is running')
     from server import app
 
     connect_to_db(app)
