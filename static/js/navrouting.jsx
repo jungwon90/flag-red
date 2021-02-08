@@ -1,5 +1,6 @@
 console.log('Hi');
 console.log(ReactRouterDOM);
+//store ReactRouterDOM elements
 const Router = ReactRouterDOM.BrowserRouter;
 const Route = ReactRouterDOM.Route;
 const Switch = ReactRouterDOM.Switch;

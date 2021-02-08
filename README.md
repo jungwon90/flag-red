@@ -1,5 +1,9 @@
 ## Project Proposal
 
+### Background Stroy
+I think we can all agree that 2020 has been emotionally exhausting for everyone. For me and my family, it was a rough sheltering inside the house, not only from Covid19 but also from the California wildfires. Not being able to open the windows and the thought of not knowing if it was safe to go outside became the daily norm. From this experience alone, it inspired me to create an application called Flag Red. Flag Red is an application that shows real-time air qualities, active wildfires and soil conditions on the map.
+
+
 ### Why do we need Flag Red?
 
 - We want to be your safeguard from air pollution.
