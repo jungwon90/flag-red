@@ -9,7 +9,7 @@ class RealTimeAirQuality(RealTimeData):
         self.longitude = 0
 
     def get_data(self):
-        """ Request realltime airquality data from API and return it """
+        """ Request real-time air quality data from API and return it """
 
         self.set_query_string()
         self.realtime_data = super().get_data()

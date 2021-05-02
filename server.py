@@ -55,7 +55,7 @@ def search_result():
     search_for = request.args.get('cur-search-for')
     search_by = request.args.get('cur-search-by')
     search_input = request.args.get('cur-search-input') 
-    print(search_by)
+   
     try:
         # Request air quality data from API -> Store in a variable called "air_quality"
         air_url = f'https://api.ambeedata.com/latest/{search_by}'
@@ -97,7 +97,6 @@ def search_result():
 
             fire_res = requests.get(fire_url, headers=headers, params=fire_querystring)
             fire_data = fire_res.json() # convert json to python dictionary
-            print(fire_data)
             
             if len(fire_data['data']) == 0:
                 #if there's no active fire, return a string 'No Active Fire around search location"
