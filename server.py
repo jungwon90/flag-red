@@ -55,8 +55,7 @@ def search_result():
     search_for = request.args.get('cur-search-for')
     search_by = request.args.get('cur-search-by')
     search_input = request.args.get('cur-search-input') 
-    print(search_for, search_by, search_input)
-
+    print(search_by)
     try:
         # Request air quality data from API -> Store in a variable called "air_quality"
         air_url = f'https://api.ambeedata.com/latest/{search_by}'
@@ -116,9 +115,9 @@ def search_result():
                 print('return fire')
             
 
-        # else if (search_for == "pollen")
+        # else if (search_for == "soil")
         elif search_for == "soil":
-            # Get pollen data from the API using latitude, longitude that got extracted above and return it
+            # Get soil data from the API using latitude, longitude that got extracted above and return it
             soil_url = "https://api.ambeedata.com/soil/latest/by-lat-lng"
             soil_querystring = {"lat": str(latitude), "lng": str(longitude)}
 
