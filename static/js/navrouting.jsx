@@ -1,3 +1,4 @@
+
 console.log('Hi');
 console.log(ReactRouterDOM);
 //store ReactRouterDOM elements
@@ -855,38 +856,40 @@ function SearchBar (props) {
     
         //get ruquest to /search in the server
         $.get('/search', formInputs, (response)=>{
+            console.log(response)
+            props.setMarkerData(response)
              //if search-for =='air-quality'
-            if ( formInputs['cur-search-for'] === 'air-quality'){
-                //store the response data into 'airData' variable
-                airData = response
-                console.log(airData);
+            // if ( formInputs['cur-search-for'] === 'air-quality'){
+            //     //store the response data into 'airData' variable
+            //     airData = response
+            //     console.log(airData);
 
-                //updating state of props.markerData
-                props.setMarkerData(airData);
+            //     //updating state of props.markerData
+            //     props.setMarkerData(airData);
                 
-            //if search-for == 'fire
-            } else if(formInputs['cur-search-for'] === 'fire'){
-                //store the response data into 'firData' variable
-                fireData = response
-                console.log(fireData);
+            // //if search-for == 'fire
+            // } else if(formInputs['cur-search-for'] === 'fire'){
+            //     //store the response data into 'firData' variable
+            //     fireData = response
+            //     console.log(fireData);
                 
-                //it's undefined on console when there's no active fire
-                const fires = fireData['data'];
-                console.log(fires)
+            //     //it's undefined on console when there's no active fire
+            //     const fires = fireData['data'];
+            //     console.log(fires)
 
-                //updating state of props.markerData
-                props.setMarkerData(fireData);  
+            //     //updating state of props.markerData
+            //     props.setMarkerData(fireData);  
                 
-            //if search-for == 'soil
-            } else if(formInputs['cur-search-for'] === 'soil'){
-                //store the response data into 'soilData' variable
-                soilData = response
-                console.log(soilData)
+            // //if search-for == 'soil
+            // } else if(formInputs['cur-search-for'] === 'soil'){
+            //     //store the response data into 'soilData' variable
+            //     soilData = response
+            //     console.log(soilData)
 
-                //updating state of props.markerData
-                props.setMarkerData(soilData);
+            //     //updating state of props.markerData
+            //     props.setMarkerData(soilData);
         
-            } 
+            // } 
 
         }).fail(() => {
             setIsError(true);
@@ -1075,7 +1078,7 @@ function MapContainer(props) {
                 
                 map.overlayMapTypes.insertAt(0, airQualMapOverlay);
                
-            } else if(props.dataType == 'fire'){
+            } else if(props.dataType == 'fire' && props.markerData && props.markerData['data']){
                 console.log(props.dataType)
                 //Extract coordinate and data for display from props.markerData
                 const fireData = props.markerData;
@@ -1085,7 +1088,7 @@ function MapContainer(props) {
     
                 for(const eachFire of fires){
                     latitude = eachFire['lat'];
-                    longitude = eachFire['lon'];
+                    longitude = eachFire['lng'];
                     let confidence = eachFire['confidence'];
                     let daynight = eachFire['daynight'];
                     let detectionTime = eachFire['detection_time'];
@@ -1128,7 +1131,7 @@ function MapContainer(props) {
                     noDataFound = "No Fire Data Found";
                 }
 
-            } else {
+            } else if(props.dataType == 'soil' && props.markerData && props.markerData['data']){
                 console.log(props.dataType)
                 const city = props.markerData['airforecast']['city'];
                 const coordinate = city['geo']; //an array of lat, lng

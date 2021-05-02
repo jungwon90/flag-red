@@ -29,7 +29,7 @@ class RealTimeAirQuality(RealTimeData):
         airqual_dictionary = self.realtime_data['stations'][0] #get the very first(recent) data/result
         self.latitude = airqual_dictionary['lat']
         self.longitude = airqual_dictionary['lng']
-        print(self.latitude, self.longitude)
+      
     
 
 rtairdata = RealTimeAirQuality('city', 'SanFrancisco', "UTu4z6fSan9T2dI2Ckuj68oDGQTZNlon5SgDvsjX", 'latest/by-city')
