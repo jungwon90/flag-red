@@ -1,4 +1,4 @@
-from realtimedata import RealTimeData
+from realtime_data import RealTimeData
 
 class RealTimeSoil(RealTimeData):
     def __init__(self, API_KEY, end_point,latitude=0, longitude=0):

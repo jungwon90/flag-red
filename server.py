@@ -4,10 +4,11 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from twilio.rest import Client
 import crud
-from realtimeairquality import RealTimeAirQuality
-from realtimefire import RealTimeFire
-from realtimesoil import RealTimeSoil
+from realtime_airquality import RealTimeAirQuality
+from realtime_fire import RealTimeFire
+from realtime_soil import RealTimeSoil
 from airforecast import AirForecast
+from helpers import get_coordinate, generate_weekly_airforecast_in_db
 
 import os
 import sys
@@ -112,91 +113,29 @@ def handle_signup():
     return jsonify({"success": True})
 
 
+# session = {
+    # 'current_user': user_id}
 
 @app.route('/login', methods=['POST'])
 def handle_login():
     """ Log user into app """
-
     # user inputs from the form
     user_id = request.form.get('id')
     password = request.form.get('password')
-    
-    #Get user by id
-    user_obj = crud.get_user_by_id(user_id)
-    
-    # session = {
-    # 'current_user': user_id}
 
+    user_obj = crud.get_user_by_id(user_id)
     # if there's user, that means the user_id exists in DB
     if user_obj:
         if user_obj.password == password:
             # Create session and store user_id
             session['current_user'] = user_obj.user_id
-
-            # Need to create air quality forecast and store the data in DB for user profile 
-            latitude = 0
-            longitude = 0
-            file = open('data/cities.txt') # load the file
-            for line in file:  # loop over the file to get each line of strings
-                line = line.rstrip() # get a string in each line and store it
-                words = line.split('/')
-                city = words[0]
-                #if the user's city is same as city, extract latitude, longitude for API request
-                if user_obj.city == city:
-                    latitude = words[1]
-                    longitude = words[2]
-
-            # API request for air forecast data 
-            air_forecast_url = f"https://api.waqi.info/feed/geo:{latitude};{longitude}/?token={API_KEY2}"
-            air_forecast_res = requests.get(air_forecast_url)
-            air_forecast = air_forecast_res.json()
-
-            #Extract the data to create AirForecast object
-            air_forecast_data = air_forecast['data']
+            # Extract coordinate
+            coordinate = get_coordinate(user_obj.city)
+            # Create AirForecast object and get data
+            air_forecast_obj = AirForecast(API_KEY2, coordinate['latitude'], coordinate['longitude'])
+            air_forecast_data = air_forecast_obj.get_data()['data']
             print(air_forecast_data)
-            if air_forecast_data['forecast'].get('daily', 0) != 0:
-                air_forecast_daily = air_forecast_data['forecast']['daily']
-
-                pm10_last_index = len(air_forecast_daily['pm10']) -1
-                pm25_last_index = len(air_forecast_daily['pm25']) -1
-                o3_last_index = len(air_forecast_daily['pm10']) -1
-                # create 6 days of air forecast
-                for i in range(6):  
-                    if i > pm10_last_index:
-                        pm10 = air_forecast_daily['uvi'][pm10_last_index]['avg']
-                    else:  
-                        pm10 = air_forecast_daily['pm10'][i]['avg'] 
-                    
-                    if i > pm25_last_index:
-                        pm25 = air_forecast_daily['uvi'][pm25_last_index]['avg']
-                    else:
-                        pm25 = air_forecast_daily['pm25'][i]['avg']
-                    
-                    if i > o3_last_index:
-                        o3 = air_forecast_daily['o3'][o3_last_index]['avg']
-                    else:
-                        o3 = air_forecast_daily['o3'][i]['avg']
-                    dominentpol = air_forecast_data['dominentpol']
-                    aqi = air_forecast_data['aqi']
-                    lat = latitude
-                    lng = longitude
-                    time = air_forecast_data['time']['s']
-                    # time = datetime.strptime(air_forecast_data['time']['s'], '%Y-%m-%d %H:%M:%S')
-                    city_name = user_obj.city
-                    #sometime, uvi has not enough length of forecast days
-                    last_uvi_index = len(air_forecast_daily['uvi']) - 1
-                    if i > last_uvi_index:
-                        uvi = air_forecast_daily['uvi'][last_uvi_index]['avg']
-                    else:
-                        uvi = air_forecast_daily['uvi'][i]['avg'] 
-                    print(pm10, pm25, o3, uvi, dominentpol, aqi, lat, lng, time, city_name)
-                            
-                    # create AirForecast object(air quality forecast of today ~ todat + 5days)
-                    # and store it into DB
-                    air_obj = crud.create_airforecast(pm10, pm25, o3, uvi, dominentpol, aqi, lat, lng, time, city_name)
-                    # create UserProfileAirForecast and store it into DB
-                    crud.create_user_profile_airforecast(user_obj, air_obj)
-
+            generate_weekly_airforecast_in_db(air_forecast_data, user_obj, coordinate['latitude'], coordinate['longitude'])
             return jsonify({'message': 'Logged in!'})
         else:
             session['current_user'] = ''

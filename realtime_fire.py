@@ -1,4 +1,4 @@
-from realtimedata import RealTimeData
+from realtime_data import RealTimeData
 
 class RealTimeFire(RealTimeData):
     def __init__(self, search_input, API_KEY, end_point, latitude=0, longitude=0):

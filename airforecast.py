@@ -16,6 +16,7 @@ class AirForecast:
         self.data = air_forecast_req.json()
 
         return self.data
-        
+
+
 
 data = AirForecast("39ffe132bb8c29508473c9dde86ba6fe193f5195", 37.7749, -122.4194)
