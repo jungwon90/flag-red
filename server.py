@@ -7,6 +7,7 @@ from realtime_airquality import RealTimeAirQuality
 from realtime_fire import RealTimeFire
 from realtime_soil import RealTimeSoil
 from airforecast import AirForecast
+from twilio import Twilio
 from helpers import get_coordinate, generate_weekly_airforecast_in_db, get_air_quality_description,get_uv_level_description, get_date_of_today, get_user_sms_service_data
 
 import os
@@ -189,7 +190,6 @@ def send_waqi_api_key():
 @app.route('/alertrequest', methods=['POST'])
 def send_sms_alert():
     """ Send users a SMS air quality/fire alert """
-
     # Get current user by id
     cur_user_id = session['current_user']
     user_obj = crud.get_user_by_id(cur_user_id)
@@ -199,29 +199,14 @@ def send_sms_alert():
     today = get_date_of_today()
     crud.create_twilio(user_obj, today)
 
-    # Extract phone_number and first_name from each User object
-    phone_number = os.environ['PHONE_NUMBER']
-    twilio_phone = os.environ['TWILIO_PHONE_NUMBER']
-    twilio_account_sid = os.environ['TWILIO_ACCOUNT_SID']
-    twilio_key = os.environ['TWILIO_KEY']  
-    user_fname = user_obj.fname
-
     user_sms_data = get_user_sms_service_data(cur_user_id)    
     # get sms descriptions
     air_quality = get_air_quality_description(user_sms_data['aqi'])
     uv_level = get_uv_level_description(user_sms_data['uvi'])
-    
-    # Create alert message for the user
-    message = f"Hello, {user_fname}! Today's air quality around {user_sms_data['city']} is {air_quality}. Dominent pollution is {user_sms_data['dominentpol']} and UV level is {uv_level}."
-
-    # send alert_message to users
-    client = Client(twilio_account_sid, twilio_key)
-
-    sms = client.messages.create(
-        to = phone_number,
-        from_ = twilio_phone,
-        body = message
-    )
+    # Create Twilio object
+    twilio_obj = Twilio(os.environ['PHONE_NUMBER'], os.environ['TWILIO_PHONE_NUMBER'], os.environ['TWILIO_ACCOUNT_SID'], os.environ['TWILIO_KEY'], user_obj.fname)
+    twilio_obj.set_message(user_sms_data['city'],air_quality, user_sms_data['dominentpol'], uv_level)
+    twilio_obj.send_message()
             
     return jsonify({'message': 'Alert On'})
   
