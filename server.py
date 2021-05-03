@@ -1,14 +1,13 @@
 from flask import Flask, render_template, jsonify, request, redirect, session, flash
 from model import db, connect_to_db, User, Twilio, UserProfileAirForecast, AirForecast
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 from twilio.rest import Client
 import crud
 from realtime_airquality import RealTimeAirQuality
 from realtime_fire import RealTimeFire
 from realtime_soil import RealTimeSoil
 from airforecast import AirForecast
-from helpers import get_coordinate, generate_weekly_airforecast_in_db, get_air_quality_description
+from helpers import get_coordinate, generate_weekly_airforecast_in_db, get_air_quality_description,get_uv_level_description, get_date_of_today, get_user_sms_service_data
 
 import os
 import sys
@@ -194,13 +193,10 @@ def send_sms_alert():
     # Get current user by id
     cur_user_id = session['current_user']
     user_obj = crud.get_user_by_id(cur_user_id)
-
     # Set SMS service for that user
     crud.set_sms_service(cur_user_id, True)
-      
     # Add the user to twilio table
-    today_obj = datetime.now()
-    today = f"{today_obj.year}/{today_obj.month}/{today_obj.day}"
+    today = get_date_of_today()
     crud.create_twilio(user_obj, today)
 
     # Extract phone_number and first_name from each User object
@@ -210,26 +206,13 @@ def send_sms_alert():
     twilio_key = os.environ['TWILIO_KEY']  
     user_fname = user_obj.fname
 
-    # Get 6 UserProfileAirForecast objects by the current user id
-    user_airforecasts = crud.get_user_profile_airforecasts_by_user_id(cur_user_id)
-    # Get all air_forecasts
-    airforecasts = crud.get_airforecasts();
-    # Pull 6 days of air forecast with the air_forecast_ids
-    user_sms_data = {}
-    day = 1
-    for user_airforecast in user_airforecasts:
-        for airforecast in airforecasts:
-            if user_airforecast.air_forecast_id == airforecast.air_forecast_id:
-                user_sms_data[f'{day}'] = {'pm10': airforecast.pm10, 'pm25': airforecast.pm25, 'uvi': airforecast.uvi, 
-                                        'dominentpol': airforecast.dominentpol, 'aqi': airforecast.aqi, 'city': airforecast.city}
-                day += 1
-                
+    user_sms_data = get_user_sms_service_data(cur_user_id)    
     # get sms descriptions
-    air_quality = get_air_quality_description(user_sms_data['1']['aqi'])
-    uv_level = get_uv_level_description(user_sms_data['1']['uvi'])
+    air_quality = get_air_quality_description(user_sms_data['aqi'])
+    uv_level = get_uv_level_description(user_sms_data['uvi'])
     
     # Create alert message for the user
-    message = f"Hello, {user_fname}! Today's air quality around {user_sms_data['1']['city']} is {air_quality}. Dominent pollution is {today_air_forecast['dominentpol']} and UV level is {uv_level}."
+    message = f"Hello, {user_fname}! Today's air quality around {user_sms_data['city']} is {air_quality}. Dominent pollution is {user_sms_data['dominentpol']} and UV level is {uv_level}."
 
     # send alert_message to users
     client = Client(twilio_account_sid, twilio_key)

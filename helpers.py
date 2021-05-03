@@ -1,4 +1,5 @@
 import crud
+from datetime import datetime
 
 def get_coordinate(user_city):
     coordinate = {}
@@ -68,7 +69,7 @@ def get_air_quality_description(air_quality_index):
     air_quality = ''
     if air_quality_index <= 50:
         air_quality = "good"
-    elif air_quality_index] > 50 and air_quality_index <= 100:
+    elif air_quality_index > 50 and air_quality_index <= 100:
         air_quality = "moderate"
     elif air_quality_index > 100 and air_quality_index <= 150:
         air_quality = "unhealthy for sensitive groups"
@@ -93,3 +94,22 @@ def get_uv_level_description(uv_index):
     elif uv_index > 10:
         uv_level = "extreme"
     return uv_level
+
+def get_date_of_today():
+    today_obj = datetime.now()
+    today = f"{today_obj.year}/{today_obj.month}/{today_obj.day}"
+    return today
+
+def get_user_sms_service_data(user_id):
+    # Get 6 UserProfileAirForecast objects by the current user id
+    user_airforecasts = crud.get_user_profile_airforecasts_by_user_id(user_id)
+    # Get all air_forecasts
+    airforecasts = crud.get_airforecasts();
+    user_sms_data = {}
+    for user_airforecast in user_airforecasts:
+        for airforecast in airforecasts:
+            if user_airforecast.air_forecast_id == airforecast.air_forecast_id:
+                user_sms_data = {'pm10': airforecast.pm10, 'pm25': airforecast.pm25, 'uvi': airforecast.uvi, 
+                                        'dominentpol': airforecast.dominentpol, 'aqi': airforecast.aqi, 'city': airforecast.city}
+                break
+    return user_sms_data
