@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, redirect, session, flash
+from flask import Flask, render_template, jsonify, request, redirect, session, flash, Response
 from model import db, connect_to_db, User, Twilio, UserProfileAirForecast, AirForecast
 from flask_sqlalchemy import SQLAlchemy
 from twilio.rest import Client
@@ -7,7 +7,7 @@ from realtime_airquality import RealTimeAirQuality
 from realtime_fire import RealTimeFire
 from realtime_soil import RealTimeSoil
 from airforecast import AirForecast
-from twilio import Twilio
+from twilio_sms import Twilio
 from helpers import get_coordinate, generate_weekly_airforecast_in_db, get_air_quality_description,get_uv_level_description, get_date_of_today, get_user_sms_service_data
 
 import os
@@ -39,7 +39,7 @@ def homepage():
         current_user = session['current_user'] = ''
     
 
-    return render_template('homepage.html')
+    return render_template('homepage.html'), 200
 
 
 
@@ -71,7 +71,7 @@ def search_result():
         air_forecast = air_forecast_obj.get_data()
         # Append air_forcast to result_data
         result_data['airforecast'] = air_forecast['data']
-        return jsonify(result_data)
+        return jsonify(result_data), 200
     except:
         e = sys.exc_info()[0]
         print("Error: %s" % e )
@@ -89,7 +89,7 @@ def handle_valid_user():
     for user in all_users:
         all_user_ids.append(user.user_id);
 
-    return jsonify(all_user_ids)
+    return jsonify(all_user_ids), 200
 
 
 
@@ -110,7 +110,7 @@ def handle_signup():
     user_obj = crud.create_user(input_id, first_name, last_name, password, email, phone_number, city)                                                                                                                                                                                                                             
 
 
-    return jsonify({"success": True})
+    return jsonify({"success": True}), 201
 
 
 # session = {
@@ -134,14 +134,13 @@ def handle_login():
             # Create AirForecast object and get data
             air_forecast_obj = AirForecast(API_KEY2, coordinate['latitude'], coordinate['longitude'])
             air_forecast_data = air_forecast_obj.get_data()['data']
-            print(air_forecast_data)
             generate_weekly_airforecast_in_db(air_forecast_data, user_obj, coordinate['latitude'], coordinate['longitude'])
-            return jsonify({'message': 'Logged in!'})
+            return jsonify({'message': 'Logged in!'}), 201
         else:
             session['current_user'] = ''
-            return jsonify({'message': 'Wrong password!'})    
+            return jsonify({'message': 'Wrong password!'}), 401    
     else:
-        return jsonify({'message': 'Wrong ID!'})
+        return jsonify({'message': 'Wrong ID!'}), 401
 
 
 
@@ -152,7 +151,7 @@ def handle_logout():
     # Delete the user from session
     del session['current_user']
 
-    return jsonify({'message': 'You are logged out!'})
+    return jsonify({'message': 'You are logged out!'}), 201
 
 
 @app.route('/profile.json')
@@ -174,7 +173,7 @@ def handle_profile():
                                         'lng': air_forecast.lng, 'time': air_forecast.time, 'city': air_forecast.city})
                 day += 1
 
-    return jsonify(user_profile_data)
+    return jsonify(user_profile_data), 200
 
 
 
@@ -182,7 +181,7 @@ def handle_profile():
 def send_waqi_api_key():
     """ Return WAQI API KEY """
 
-    return jsonify({'API_KEY2': API_KEY2})
+    return jsonify({'API_KEY2': API_KEY2}), 200
 
 
 ############## SMS Service ###############
@@ -208,7 +207,7 @@ def send_sms_alert():
     twilio_obj.set_message(user_sms_data['city'],air_quality, user_sms_data['dominentpol'], uv_level)
     twilio_obj.send_message()
             
-    return jsonify({'message': 'Alert On'})
+    return jsonify({'message': 'Alert On'}), 201
   
 
 
@@ -222,9 +221,12 @@ def cancel_sms_alert():
     # Set SMS service to FalseFa
     crud.set_sms_service(cur_user_id, False)
 
-    return jsonify({'message': 'Alert Off'})
+    return jsonify({'message': 'Alert Off'}), 201
 
 
+@app.errorhandler(404)
+def page_not_found(error):
+    return 'This page does not exist', 404
 
 
 if __name__ == "__main__":

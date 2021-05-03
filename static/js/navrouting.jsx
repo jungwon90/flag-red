@@ -268,8 +268,8 @@ function Login(props){
             'password': password
         }
         //post request to server
-        $.post('/login', formInputs, (res) =>{
-            
+        $.post('/login', formInputs, (res, textStatus, xhr) =>{
+            console.log(textStatus, xhr.status, res);
             if(res['message'] === 'Logged in!'){
                 props.setIsLoggedIn(true);
                 props.setUser(id);
