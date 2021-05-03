@@ -113,3 +113,6 @@ def get_airforecast_by_id(air_forecast_id):
     """ Return air forecast by zipcode """
 
     return AirForecast.query.get(air_forecast_id)
+
+def get_airforecast_by_user_profile_airforecast_id(user_profile_air_forecast_id):
+    return AirForecast.query.filter_by(AirForecast.user_air_forecast_id == user_profile_air_forecast_id).all()

@@ -8,7 +8,7 @@ from realtime_airquality import RealTimeAirQuality
 from realtime_fire import RealTimeFire
 from realtime_soil import RealTimeSoil
 from airforecast import AirForecast
-from helpers import get_coordinate, generate_weekly_airforecast_in_db
+from helpers import get_coordinate, generate_weekly_airforecast_in_db, get_air_quality_description
 
 import os
 import sys
@@ -158,18 +158,12 @@ def handle_logout():
 @app.route('/profile.json')
 def handle_profile():
     """ Return a JSON response with user profile data in DB """
-
     current_user_id = request.args.get('current-user')
-    print('Currnt User ID:') 
-    print(current_user_id)
-
     user_profile_data = []
-
     # Get 6 UserProfileAirForecast objects by the current user's id that's requested
     user_profile_airforecasts = crud.get_user_profile_airforecasts_by_user_id(current_user_id)
     # Get all air_forecasts
     air_forecasts = crud.get_airforecasts();
-
     # Pull 6 days of air forecast with the air_forecast_ids
     day = 1
     for user_profile_airforecast in user_profile_airforecasts:
@@ -180,7 +174,6 @@ def handle_profile():
                                         'lng': air_forecast.lng, 'time': air_forecast.time, 'city': air_forecast.city})
                 day += 1
 
-    print(user_profile_data)
     return jsonify(user_profile_data)
 
 
@@ -231,35 +224,12 @@ def send_sms_alert():
                                         'dominentpol': airforecast.dominentpol, 'aqi': airforecast.aqi, 'city': airforecast.city}
                 day += 1
                 
-    # get air quality based on aqi level
-    today_air_forecast = user_sms_data['1']
-    if today_air_forecast['aqi'] <= 50:
-        air_quality = "good"
-    elif today_air_forecast['aqi'] > 50 and today_air_forecast['aqi'] <= 100:
-        air_quality = "moderate"
-    elif today_air_forecast['aqi'] > 100 and today_air_forecast['aqi'] <= 150:
-        air_quality = "unhealthy for sensitive groups"
-    elif today_air_forecast['aqi'] > 150 and today_air_forecast['aqi'] <= 200:
-        air_quality = "unhealthy"
-    elif today_air_forecast['aqi'] > 200 and today_air_forecast['aqi'] <= 300:
-        air_quality = "very unhealthy"
-    elif today_air_forecast['aqi'] > 300:
-        air_quality = "hazardous"
-
-    # get uv quality based on uvi level
-    if today_air_forecast['uvi'] <= 2:
-        uv_level = "low"
-    elif today_air_forecast['uvi'] > 2 and today_air_forecast['uvi'] <= 5:
-        uv_level = "moderate"
-    elif today_air_forecast['uvi'] > 5 and today_air_forecast['uvi'] <= 7:
-        uv_level = "high"
-    elif today_air_forecast['uvi'] > 7 and today_air_forecast['uvi'] <= 10:
-        uv_level = "very high"
-    elif today_air_forecast['uvi'] > 10:
-        uv_level = "extreme"
+    # get sms descriptions
+    air_quality = get_air_quality_description(user_sms_data['1']['aqi'])
+    uv_level = get_uv_level_description(user_sms_data['1']['uvi'])
     
     # Create alert message for the user
-    message = f"Hello, {user_fname}! Today's air quality around {today_air_forecast['city']} is {air_quality}. Dominent pollution is {today_air_forecast['dominentpol']} and UV level is {uv_level}."
+    message = f"Hello, {user_fname}! Today's air quality around {user_sms_data['1']['city']} is {air_quality}. Dominent pollution is {today_air_forecast['dominentpol']} and UV level is {uv_level}."
 
     # send alert_message to users
     client = Client(twilio_account_sid, twilio_key)

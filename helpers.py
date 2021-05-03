@@ -63,3 +63,33 @@ def get_air_forecast_attributes(air_forecast_data, air_forecast_daily, index, us
         air_forecast_att_dic['uvi'] = air_forecast_daily['uvi'][index]['avg'] 
     
     return air_forecast_att_dic
+
+def get_air_quality_description(air_quality_index):
+    air_quality = ''
+    if air_quality_index <= 50:
+        air_quality = "good"
+    elif air_quality_index] > 50 and air_quality_index <= 100:
+        air_quality = "moderate"
+    elif air_quality_index > 100 and air_quality_index <= 150:
+        air_quality = "unhealthy for sensitive groups"
+    elif air_quality_index > 150 and air_quality_index <= 200:
+        air_quality = "unhealthy"
+    elif air_quality_index > 200 and air_quality_index <= 300:
+        air_quality = "very unhealthy"
+    elif air_quality_index > 300:
+        air_quality = "hazardous"
+    return air_quality
+
+def get_uv_level_description(uv_index):
+    uv_level = ''
+    if uv_index <= 2:
+        uv_level = "low"
+    elif tuv_index > 2 and uv_index <= 5:
+        uv_level = "moderate"
+    elif uv_index > 5 and uv_index <= 7:
+        uv_level = "high"
+    elif uv_index > 7 and uv_index <= 10:
+        uv_level = "very high"
+    elif uv_index > 10:
+        uv_level = "extreme"
+    return uv_level
