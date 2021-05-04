@@ -1,6 +1,8 @@
 from realtime_data import RealTimeData
 
 class RealTimeFire(RealTimeData):
+    """ This class retrieves real time fire data from AMBEE API """
+
     def __init__(self, search_input, API_KEY, end_point, latitude=0, longitude=0):
         super().__init__(API_KEY, end_point)
         self.latitude = latitude

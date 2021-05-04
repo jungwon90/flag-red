@@ -2,6 +2,7 @@ import crud
 from datetime import datetime
 
 def get_coordinate(user_city):
+    """ Returns coordinate based on user_city """
     coordinate = {}
     file = open('data/cities.txt') # load the file
     for line in file:  # loop over the file to get each line of strings

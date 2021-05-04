@@ -1,6 +1,8 @@
 from realtime_data import RealTimeData
 
 class RealTimeAirQuality(RealTimeData):
+    """ This class retrieves real time air quality data from AMBEE API """
+
     def __init__(self, search_by, search_input, API_KEY, end_point):
         super().__init__(API_KEY, end_point)
         self.search_by = search_by

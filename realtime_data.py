@@ -2,6 +2,8 @@ import requests
 import json
 
 class RealTimeData:
+    """ This class retrieves real time data from AMBEE API """
+
     def __init__(self, API_KEY, end_point=''):
         self.url = 'https://api.ambeedata.com/' + end_point
         self.headers = {

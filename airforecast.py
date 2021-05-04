@@ -2,6 +2,8 @@ import requests
 import json
 
 class AirForecast:
+    """ This class retrieves air forecast data from WAQI API """
+
     def __init__(self, API_KEY, latitude, longitude):
         self.API_KEY = API_KEY
         self.latitude = latitude

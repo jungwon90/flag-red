@@ -1,6 +1,8 @@
 from realtime_data import RealTimeData
 
 class RealTimeSoil(RealTimeData):
+    """ This class retrieves real time soil data from AMBEE API """
+
     def __init__(self, API_KEY, end_point,latitude=0, longitude=0):
         super().__init__(API_KEY, end_point)
         self.latitude = latitude
