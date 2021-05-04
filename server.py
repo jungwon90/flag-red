@@ -46,7 +46,6 @@ def homepage():
 @app.route('/search')
 def search_result():
     """ Search for Air Quality/Active Fire/Pollen """
-    # Get user inputs from the form
     search_for = request.args.get('cur-search-for')
     search_by = request.args.get('cur-search-by')
     search_input = request.args.get('cur-search-input') 
@@ -122,7 +121,6 @@ def handle_login():
     # user inputs from the form
     user_id = request.form.get('id')
     password = request.form.get('password')
-
     user_obj = crud.get_user_by_id(user_id)
     # if there's user, that means the user_id exists in DB
     if user_obj:
@@ -157,7 +155,7 @@ def handle_logout():
 @app.route('/profile.json')
 def handle_profile():
     """ Return a JSON response with user profile data in DB """
-    
+
     current_user_id = request.args.get('current-user')
     user_profile_data = get_user_profile_data(current_user_id)
 
