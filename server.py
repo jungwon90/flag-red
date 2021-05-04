@@ -8,7 +8,7 @@ from realtime_fire import RealTimeFire
 from realtime_soil import RealTimeSoil
 from airforecast import AirForecast
 from twilio_sms import Twilio
-from helpers import get_coordinate, generate_weekly_airforecast_in_db, get_air_quality_description,get_uv_level_description, get_date_of_today, get_user_sms_service_data
+from helpers import get_coordinate, generate_weekly_airforecast_in_db, get_air_quality_description,get_uv_level_description, get_date_of_today, get_user_sms_service_data, get_user_profile_data
 
 import os
 import sys
@@ -157,21 +157,9 @@ def handle_logout():
 @app.route('/profile.json')
 def handle_profile():
     """ Return a JSON response with user profile data in DB """
+    
     current_user_id = request.args.get('current-user')
-    user_profile_data = []
-    # Get 6 UserProfileAirForecast objects by the current user's id that's requested
-    user_profile_airforecasts = crud.get_user_profile_airforecasts_by_user_id(current_user_id)
-    # Get all air_forecasts
-    air_forecasts = crud.get_airforecasts();
-    # Pull 6 days of air forecast with the air_forecast_ids
-    day = 1
-    for user_profile_airforecast in user_profile_airforecasts:
-        for air_forecast in air_forecasts:
-            if user_profile_airforecast.air_forecast_id == air_forecast.air_forecast_id:
-                user_profile_data.append({'pm10': air_forecast.pm10, 'pm25': air_forecast.pm25, 'o3': air_forecast.o3, 'uvi': air_forecast.uvi, 
-                                        'dominentpol': air_forecast.dominentpol, 'aqi': air_forecast.aqi, 'lat': air_forecast.lat,
-                                        'lng': air_forecast.lng, 'time': air_forecast.time, 'city': air_forecast.city})
-                day += 1
+    user_profile_data = get_user_profile_data(current_user_id)
 
     return jsonify(user_profile_data), 200
 

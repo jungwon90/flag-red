@@ -113,3 +113,19 @@ def get_user_sms_service_data(user_id):
                                         'dominentpol': airforecast.dominentpol, 'aqi': airforecast.aqi, 'city': airforecast.city}
                 break
     return user_sms_data
+
+def get_user_profile_data(user_id):
+    user_profile_data = []
+    # Get 6 UserProfileAirForecast objects by the current user's id that's requested
+    user_profile_airforecasts = crud.get_user_profile_airforecasts_by_user_id(current_user_id)
+    air_forecasts = crud.get_airforecasts();
+    # Pull 6 days of air forecast with the air_forecast_ids
+    day = 1
+    for user_profile_airforecast in user_profile_airforecasts:
+        for air_forecast in air_forecasts:
+            if user_profile_airforecast.air_forecast_id == air_forecast.air_forecast_id:
+                user_profile_data.append({'pm10': air_forecast.pm10, 'pm25': air_forecast.pm25, 'o3': air_forecast.o3, 'uvi': air_forecast.uvi, 
+                                        'dominentpol': air_forecast.dominentpol, 'aqi': air_forecast.aqi, 'lat': air_forecast.lat,
+                                        'lng': air_forecast.lng, 'time': air_forecast.time, 'city': air_forecast.city})
+                day += 1
+    return user_profile_data
